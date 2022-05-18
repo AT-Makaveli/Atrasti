@@ -1,0 +1,45 @@
+#body-content {
+    background-size: cover;
+    background: url("https://atrasti.com/img/hero/engineblock.jpg") center;
+}
+
+#login-form-wrapper {
+    padding: 20% 0;
+}
+
+@@media(min-width: 576px) {
+    #login-form-wrapper {
+        padding: 20% 10% !important;
+    }
+}
+
+@@media (min-width: 768px) {
+    #login-form-wrapper {
+        padding: 15% 10% !important;
+    }
+}
+
+.composition {
+    padding: 0;
+}
+
+.composition li {
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    float: left;
+    display: inline-block;
+    color: white;
+    border-radius: 4.29982rem !important;
+    text-align: center;
+    line-height: 30px;
+    margin: 4px 4px 14px 4px;
+}
+
+.nok {
+    background-color: #EF5350;
+}
+
+.ok {
+    background-color: #4CAF50;
+}

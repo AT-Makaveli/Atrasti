@@ -1,0 +1,85 @@
+﻿@model Atrasti.Models.Account.LoginViewModel
+
+
+@{
+    ViewData["Title"] = "Login";
+}
+<style>
+    #body-content {
+        background-size: cover;
+        background: url(https://images.unsplash.com/photo-1547932087-59a8f2be576e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1950&q=80) center;
+    }
+</style>
+
+<div id="body-content">
+    <div class="container">
+
+        <div class="d-flex justify-content-center vh-100">
+            <div id="login-card" class="bg-light">
+                <div class="d-flex justify-content-center">
+
+                    <div class="w-85" id="login-form-wrapper">
+                        <br />
+
+                        <form class="mb-2" method="post">
+
+                            <div class="input-group mb-2">
+                                @if (ViewData.ContainsKey("invalid-login"))
+                                {
+                                    <input id="email" type="email"
+                                           class="form-control is-invalid"
+                                           name="email" placeholder="Email" required autocomplete="email" value="@ViewData["old-email"]">
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>@ViewData["invalid-login"]</strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <input id="email" type="email"
+                                           class="form-control"
+                                           name="email" placeholder="Email" required autocomplete="email" value="@ViewData["old-email"]">
+
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-white" style="background-color: #ffffff">
+                                            <i class="fa fa-user" style="color: #5a6268"></i>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="input-group mb-2">
+                                <input id="password" type="password" placeholder="Password"
+                                       class="form-control" name="password"
+                                       required
+                                       autocomplete="current-password" asp-for="Password" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text text-white" style="background-color: #ffffff">
+                                        <i class="fa fa-lock" style="color: #5a6268"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <input type="submit" value="Login" class="form-control btn btn-secondary">
+
+                            <div class="input-group mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" id="Remember" type="checkbox" value="true" asp-for="RememberMe" />
+                                    <input type="hidden" value="false" asp-for="RememberMe" />
+
+                                    <label class="form-check-label" for="remember">
+                                        Remember Me
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+
+                        <a class="w-100 text-center d-block text-dark" href="@Url.Action("ResetPassword", "Login")">
+                            Reset Password
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

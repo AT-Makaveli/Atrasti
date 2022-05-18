@@ -1,0 +1,349 @@
+﻿@using Atrasti.Utils
+@{
+    ViewData["Title"] = "Home";
+
+    AtrastiUser user = (AtrastiUser) ViewData["user"];
+    Subscription subscription = ViewData["hero"] != null ? (Subscription) ViewData["hero"] : null;
+    ICollection<AtrastiUser> index_twenty = (ICollection<AtrastiUser>) ViewData["index_twenty"];
+}
+
+<section id="page-top">
+
+    <div id="header-content" class="p-4">
+        <div id="hero" class="text-center pb-18"
+             style="background: url(@(subscription != null ? subscription.Data : "/img/hero/basketball.jpg")); background-size: cover">
+            <div id="hero-header">
+                <div class="jumbotron bg-transparent">
+                    <h2 class="text-white pt-5 text-shadow" id="hero-title">Welcome to Atrasti!</h2>
+                    <h5 class="text-white p-3 text-shadow">
+                        Atrasti is a platform for value generating searches, we make it easy for companies to find
+                        and
+                        connect with each other.
+                    </h5>
+
+                    <form class="w-50 m-auto" id="search-bar-form" method="POST" asp-action="SearchResult">
+                        <div class="input-group no-result" id="search-group">
+                            <input id="search-bar" autocomplete="off" name="searchString" type="text" placeholder="Search ..." class="form-control border-0">
+                            <div class="input-group-append">
+                                <div class="input-group-text bg-white border-0">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <div id="search-drop-down" class="d-none">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @if (subscription != null)
+        {
+            <a style="color: white; position: absolute; right: 0; margin: -3.5rem 4.5rem 0 0;" href="@Url.RouteUrl("Profile", new {id = subscription.CompanyId})" class="text-decoration-none">
+                <h5>@subscription.User.Company</h5>
+            </a>
+        }
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        #search-drop-down {
+            background-color: white;
+            text-align: left;
+            position: absolute;
+            width: 100%;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            padding-bottom: 10px;
+            overflow: hidden;
+        }
+
+            #search-drop-down a {
+                padding: 5px 0.75rem;
+                font-size: 16px;
+                width: 100%;
+                text-decoration: none;
+                display: inline-block;
+            }
+            
+            #search-drop-down a:hover {
+                background-color: #eeeeee;
+            }
+            
+        #search-bar {
+            height: 44px;
+            font-size: 16px;
+        }
+        
+        #search-bar:focus {
+            box-shadow: none !important;
+        }
+        
+        #search-group {
+            border: 1px solid #dfe1e5;
+            height: 44px;
+            overflow: hidden;
+        }
+        
+        #search-group.no-result {
+            border-radius: 20px;
+        }
+        
+        #search-group.has-result {
+            border-radius: 20px;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+        
+        #search-group:hover {
+            box-shadow: 0 1px 6px rgba(32,33,36,.28);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        const searchDropDown = $("#search-drop-down");
+        let dropDownIndex = 0;
+        document.onkeydown = function(keyEvent) {
+            const dropDownLength = searchDropDown.children().length;
+            if (dropDownLength > 0 && $("#search-bar").is(":focus")) {
+                if (keyEvent.key === "ArrowDown") {
+                    dropDownIndex++;
+                    if (dropDownIndex === (dropDownLength + 1)) dropDownIndex = 0;
+                    
+                    fixDropDownClasses();
+                } else if (keyEvent.key === "ArrowUp") {
+                    dropDownIndex--;
+                    if (dropDownIndex === -1) dropDownIndex = dropDownLength;
+                    
+                    fixDropDownClasses();
+                }
+            }
+        }
+        
+        searchDropDown.mouseover(function() {
+            dropDownIndex = 0;
+            fixDropDownClasses();
+        });
+        
+        searchDropDown.on('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        $(document).on('click', function (e) {
+            dropDownIndex = 0;
+            if (searchDropDown.children().length > 0) {
+                searchDropDown.children().remove();
+                searchDropDown.removeClass('d-block').addClass('d-none');
+                $("#search-group").removeClass("has-result").addClass("no-result");
+            }
+        });
+        
+        function fixDropDownClasses() {
+            const dropDownChildren = searchDropDown.children();
+            for (let i = 0; i < dropDownChildren.length; i++) {
+                if ((i + 1) === dropDownIndex) {
+                    dropDownChildren[i].style.backgroundColor = "#eeeeee";
+                } else {
+                    dropDownChildren[i].style.backgroundColor = "";
+                }
+            }
+        }
+        
+        setInterval(function () {
+            const value = $("#search-bar").val();
+            if (value.length != 0) {
+                onSearch(value);
+            } else {
+                searchDropDown.children().remove();
+                searchDropDown.removeClass('d-block').addClass('d-none');
+                $("#search-group").removeClass("has-result").addClass("no-result");
+            }
+        }, 500);
+
+        var oldValue = "";
+
+        function onSearch(search) {
+            if (oldValue !== search) {
+                var dataValue = { "search": search };
+                $.ajax("/Search/SearchProducts",
+                    {
+                        type: "POST",
+                        data: dataValue,
+                        complete: (result) => {
+                            const jsonResponse = result.responseJSON;
+                            if (jsonResponse.result === "found") {
+                                searchDropDown.children().remove();
+                                const entities = jsonResponse.entities;
+                                for (const entity of entities) {
+                                    $button = $('<a href="#">' + entity.title + '</a>').appendTo(searchDropDown);
+                                    $button.on("click", () => {
+                                        $("#search-bar-form").submit();
+                                    });
+                                }
+                                
+                                searchDropDown.removeClass('d-none').addClass('d-block');
+                                $("#search-group").removeClass("no-result").addClass("has-result");
+                            }
+                            else if (jsonResponse.result == "none") {
+                                searchDropDown.children().remove();
+                                searchDropDown.removeClass('d-block').addClass('d-none');
+                                $("#search-group").removeClass("has-result").addClass("no-result");
+                            }
+                        }
+                    });
+
+                oldValue = search;
+            }
+        }
+    </script>
+}
+
+<section id="page-content" class="pt-3 pb-3 shadow">
+
+    <style>
+        #popular-industries > a {
+            width: 16%;
+            margin: 0.33%;
+        }
+
+            #popular-industries > a > div > img {
+                width: 100%
+            }
+
+            #popular-industries > a > span > i {
+                background-color: #f8fafc;
+                font-size: 48px;
+                padding: 32px;
+                border-radius: 50%;
+                border: 2px solid #29b6f6;
+                color: #757575;
+                -webkit-transition: background-color 0.5s ease-out;
+                -moz-transition: background-color 0.5s ease-out;
+                -o-transition: background-color 0.5s ease-out;
+                transition: background-color 0.5s ease-out;
+            }
+
+                #popular-industries > a > span > i:hover {
+                    background-color: #29b6f6;
+                }
+
+            #popular-industries > a > h6 {
+                text-align: center;
+            }
+
+            #popular-industries > a > span {
+                margin-top: 10px;
+                display: inline-block;
+                color: black
+            }
+            
+            .card-body {
+                opacity: 0;
+            }
+            
+            .card-body:hover {
+                opacity: 1;
+            }
+    </style>
+
+    <div class="big-container">
+        <div class="row" style="padding: 2.5rem 1.5rem 1.5rem 1.5rem !important;">
+
+            <div style="width: 90%; margin-left: 5%">
+                <div class="w-100 pb-4 text-white">
+                    <h3>Explore popular industries</h3>
+                </div>
+
+                <div id="popular-industries" class="row">
+                    <a href="@Url.RouteUrl("Popular", new {type = "healthcare"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/healthcare.png"/>
+                        </div>
+                        <span class="text-white">Healthcare</span>
+                    </a>
+                    <a href="@Url.RouteUrl("Popular", new {type = "industry"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/drill.png"/>
+                        </div>
+                        <span class="text-white">Industry</span>
+                    </a>
+                    <a href="@Url.RouteUrl("Popular", new {type = "electronics"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/electronics.png"/>
+                        </div>
+                        <span class="text-white">Electronics</span>
+                    </a>
+                    <a href="@Url.RouteUrl("Popular", new {type = "clothes"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/clothes.png"/>
+                        </div>
+                        <span class="text-white">Clothing</span>
+                    </a>
+                    <a href="@Url.RouteUrl("Popular", new {type = "Entertainment"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/entertainment.png"/>
+                        </div>
+                        <span class="text-white">Entertainment</span>
+                    </a>
+                    <a href="@Url.RouteUrl("Popular", new {type = "services"})" class="text-decoration-none text-center">
+                        <div style="border-radius: 50%; overflow: hidden">
+                            <img src="~/img/services.png"/>
+                        </div>
+                        <span class="text-white">Services</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row p-4">
+            @foreach (AtrastiUser tuser in index_twenty)
+            {
+                foreach (Product product in tuser.CompanyModel.Products)
+                {
+                    <div class="card item-entry">
+                        <img class="card-img-top" src="@Url.Content("~/products/" + product.Image)" alt="@product.Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@tuser.Company</h5>
+                            @{
+                                string companyDesc = tuser.CompanyModel.CompanyDesc;
+                                if (companyDesc.Length > 120)
+                                {
+                                    companyDesc = companyDesc.Substring(0, 127) + " [...]";
+                                }
+                            }
+                            <p class="card-text">@companyDesc</p>
+                            <div style="position: absolute; bottom: 0; right: 0; padding: 12px;">
+                                <span>
+                                    <i class="fa fa-heart-o"></i> @product.ProductLikes.Count
+                                </span>
+                            </div>
+                            <a href="@Url.RouteUrl("Profile", new {Id = tuser.Id})" class="stretched-link"></a>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="container text-center pb-16 pt-4">
+        <a class="btn btn-blue mt-3 text-white shadow" href="@Url.RouteUrl("Popular", new {type = CollectionUtils.SelectRandom("industry", "electronics", "clothes", "Entertainment", "services")})"
+           style="padding: 0.75rem 2rem 0.75rem 2rem !important; border-radius: 35px;">
+            Discover more
+        </a>
+    </div>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div id="join-now-info" class="text-center text-white pb-20">
+            <h2>Join Atrasti now</h2>
+            <p style="font-size: 16px">Explore and share your services and products with others<br/>around the world, in a new unique way.</p>
+            <a class="btn btn-blue mt-3 text-white shadow" href="@Url.RouteUrl("Register")"
+               style="padding: 0.75rem 2rem 0.75rem 2rem !important; border-radius: 35px;">
+                Register now, it's free
+            </a>
+        </div>
+    }
+</section>

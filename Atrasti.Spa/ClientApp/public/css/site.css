@@ -1,0 +1,210 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+
+.item-entry {
+    width: 99%;
+    margin: 0.5% !important;
+}
+
+@media (min-width: 768px) {
+    .item-entry {
+        width: 48% !important;
+        margin: 0.5% !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .item-entry {
+        width: 32.3% !important;
+        margin: 0.5% !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .item-entry {
+        width: 24% !important;
+        margin: 0.5% !important;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #29B6F6;
+    border-radius: 30px;
+    box-shadow: inset 2px 2px 2px hsla(0,0%,100%,.25), inset -2px -2px 2px rgba(0,0,0,.25);
+}
+
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+@font-face {
+    font-family: 'ProximaNovaSoft-Regular';
+    src: url('fonts/ProximaNovaSoft-Regular.eot');
+    src:
+        url('fonts/ProximaNovaSoft-Regular.woff') format('woff'),
+        url('fonts/ProximaNovaSoft-Regular.ttf') format('truetype'),
+        url('fonts/ProximaNovaSoft-Regular.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ProximaNovaSoft-Semibold';
+    src: url('fonts/ProximaNovaSoft-Semibold.eot');
+    src: url('fonts/ProximaNovaSoft-Semibold.woff') format('woff'), url('fonts/ProximaNovaSoft-Semibold.ttf') format('truetype'), url('fonts/ProximaNovaSoft-Semibold.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.nav-link {
+    font-size: 16px;
+    font-family: 'ProximaNovaSoft-Semibold';
+}
+
+.hover-underline {
+    font-size: 16px;
+    position: relative;
+    text-decoration: none;
+}
+
+    .hover-underline:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        background-color: #29B6F6;
+        visibility: hidden;
+        -webkit-transform: scaleX(0);
+        transform: scaleX(0);
+        -webkit-transition: all 0.3s ease-in-out 0s;
+        transition: all 0.3s ease-in-out 0s;
+    }
+
+    .hover-underline:hover:before {
+        visibility: visible;
+        -webkit-transform: scaleX(1);
+        transform: scaleX(1);
+    }
+
+.text-blue {
+    color: #29B6F6 !important
+}
+
+.btn-outline-blue {
+    border-color: #29B6F6 !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+    .btn-outline-blue:hover {
+        color: #fff !important;
+        background-color: #4FC3F7;
+        border-color: #29B6F6;
+    }
+
+    .btn-outline-blue:focus, .btn-outline-blue.focus {
+        box-shadow: 0 0 0 0.2rem #03A9F4;
+    }
+
+    .btn-outline-blue.disabled, .btn-outline-blue:disabled {
+        color: #6c757d;
+        background-color: transparent;
+    }
+
+    .btn-outline-blue:not(:disabled):not(.disabled):active, .btn-outline-blue:not(:disabled):not(.disabled).active, .show > .btn-outline-blue.dropdown-toggle {
+        color: #fff;
+        background-color: #03A9F4;
+        border-color: #03A9F4;
+    }
+
+        .btn-outline-blue:not(:disabled):not(.disabled):active:focus, .btn-outline-blue:not(:disabled):not(.disabled).active:focus, .show > .btn-outline-blue.dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.2rem #03A9F4;
+        }
+
+.big-container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 576px) {
+    .big-container {
+        max-width: 640px;
+    }
+}
+
+@media (min-width: 768px) {
+    .big-container {
+        max-width: 820px;
+    }
+}
+
+@media (min-width: 992px) {
+    .big-container {
+        max-width: 1060px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .big-container {
+        max-width: 1240px;
+    }
+}
+
+.card-body {
+    width: 100% !important
+}
+
+.btn-red {
+    color: #fff;
+    background-color: #EF5350;
+    border: #c4c5c5;
+    padding: 0.375rem 1.75rem !important;
+}
+
+    .btn-red:hover {
+        color: #fff;
+        background-color: #E53935;
+        border: #a7a8a8;
+    }
+
+.btn-blue {
+    color: #fff;
+    background-color: #29B6F6;
+    border: #29B6F6;
+    padding: 0.375rem 1.75rem !important;
+}
+
+    .btn-blue:hover {
+        color: #fff;
+        background-color: #4FC3F7;
+        border: #29B6F6;
+    }
+
+.popular-tags {
+    background-color: transparent;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 0px 0px;
+    color: rgb(255, 255, 255);
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(255, 255, 255);
+    border-image: initial;
+    transition: all 0.15s linear 0s;
+    border-radius: 4.5rem !important;
+    padding: .3rem 1.2rem .4rem 1.2rem !important;
+}
+
+    .popular-tags:hover {
+        background-color: rgba(255, 255, 255, 0.7);
+        color: rgb(0, 0, 0);
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 2px 20px;
+    }

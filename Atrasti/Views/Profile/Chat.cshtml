@@ -1,0 +1,512 @@
+﻿<!--suppress ALL -->
+@using Atrasti.Utils
+@using System.Globalization
+@model AccountSettingsModel
+
+@{
+    ViewData["Title"] = "Management";
+    AtrastiUser user = (AtrastiUser) ViewData["user"];
+    AtrastiUser friend = (AtrastiUser) ViewData["friend"];
+    IList<ChatFriend> friends = (IList<ChatFriend>) ViewData["friends"];
+    IList<ChatMessage> messages = (IList<ChatMessage>) ViewData["messages"];
+}
+
+@section Styles {
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bbootstrap 4 -->
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="/plugins/summernote/summernote-bs4.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/croppie/croppie.css"/>
+    <style>
+    .form-control {
+    background-color: #58616a !important;
+    color: white !important;
+    border-color: #7d8b99 !important;
+    }
+    
+    #message-utils-button:hover {
+        cursor: pointer;
+    }
+    </style>
+}
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLongTitle">Image preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="image-preview-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="uploadImage()">Send image</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-white navbar-light" style="z-index: 0">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                <i class="fas fa-bars"></i>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+    </ul>
+</nav>
+<!-- /.navbar -->
+
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="min-height: calc(100vh - 57px) !important">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="@Url.Content("~/logos/" + user.CompanyLogo)" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">@user.Company</a>
+            </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <!-- Add icons to the links using the .nav-icon class
+                with font-awesome or any other icon font library -->
+                <li class="nav-item has-treeview menu-open">
+                    <a href="#" class="nav-link active">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>
+                            Dashboard
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="@Url.Action("Management", "Profile")" class="nav-link">
+                                <i class="far nav-icon"></i>
+                                <p>Account Settings</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("ChangePassword", "Profile")" class="nav-link">
+                                <i class="far nav-icon"></i>
+                                <p>Change Password</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-header">Utilities</li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            Chats
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if (friends.Count > 0)
+                        {
+                            foreach (ChatFriend friendEntry in friends)
+                            {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Chat", "Profile", new {id = friendEntry.FriendId})" class="nav-link">
+                                        <i class="far nav-icon"></i>
+                                        <p>@friendEntry.FriendCompany</p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="far nav-icon"></i>
+                                    <p>You have no chats.</p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper d-flex" style="background-color: rgb(33, 37, 40) !important;">
+    <!-- Main content -->
+    <section class="content flex-fill p-0">
+        <div class="container-fluid h-100 p-0">
+            <!-- Main row -->
+            <div class="row h-100">
+                <section class="col-lg-12 connectedSortable">
+                    <div class="chat-widget w-100" style="display: flex; flex-direction: column; height: calc(100vh - 113px) !important;">
+
+                        <div class="direct-chat-messages p-0" style="padding: 1.5rem !important; position: relative; z-index: 1; flex: 1 1 0; order: 2;">
+
+                            @foreach (ChatMessage chatMessage in messages)
+                            {
+                                if (chatMessage.SenderId == user.Id)
+                                {
+                                    <div class="direct-chat-msg right">
+                                        <div class="direct-chat-infos clearfix">
+                                            <span class="direct-chat-name float-right">@user.Company</span>
+                                            <span class="direct-chat-timestamp float-left">@Html.Raw(NumberUtils.UnixTimeStampToDateTime(chatMessage.Created).ToString("dd MMM hh:mm tt", CultureInfo.InvariantCulture))</span>
+                                        </div>
+                                        <!-- /.direct-chat-infos -->
+                                        <img class="direct-chat-img" src="@Url.Content("~/logos/" + user.CompanyLogo)" alt="message user image">
+                                        <!-- /.direct-chat-img -->
+                                        <div class="direct-chat-text">
+                                            @switch (chatMessage.ChatType)
+                                            {
+                                                case ChatType.CHAT:
+                                                    @chatMessage.Message
+                                                    break;
+                                                case ChatType.FILE:
+                                                    <a href="#">@chatMessage.Message</a>
+                                                    break;
+                                            }
+                                        </div>
+                                        <!-- /.direct-chat-text -->
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="direct-chat-msg">
+                                        <div class="direct-chat-infos clearfix">
+                                            <span class="direct-chat-name float-left">@friend.Company</span>
+                                            <span class="direct-chat-timestamp float-right">@Html.Raw(NumberUtils.UnixTimeStampToDateTime(chatMessage.Created).ToString("dd MMM hh:mm tt", CultureInfo.InvariantCulture))</span>
+                                        </div>
+                                        <!-- /.direct-chat-infos -->
+                                        <img class="direct-chat-img" src="@Url.Content("~/logos/" + friend.CompanyLogo)" alt="message user image">
+                                        <!-- /.direct-chat-img -->
+                                        <div class="direct-chat-text">
+                                            @chatMessage.Message
+                                        </div>
+                                        <!-- /.direct-chat-text -->
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div style="position: relative; z-index: 1; flex: none; order: 3; box-sizing: border-box; width: 100%; min-height: 75px;" class="d-flex bg-dark p-2">
+                            <div class="message-utils p-2">
+                                <a id="message-utils-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                        <path fill="currentColor" d="M1.816 15.556v.002c0 1.502.584 2.912 1.646 3.972s2.472 1.647 3.974 1.647a5.58 5.58 0 0 0 3.972-1.645l9.547-9.548c.769-.768 1.147-1.767 1.058-2.817-.079-.968-.548-1.927-1.319-2.698-1.594-1.592-4.068-1.711-5.517-.262l-7.916 7.915c-.881.881-.792 2.25.214 3.261.959.958 2.423 1.053 3.263.215l5.511-5.512c.28-.28.267-.722.053-.936l-.244-.244c-.191-.191-.567-.349-.957.04l-5.506 5.506c-.18.18-.635.127-.976-.214-.098-.097-.576-.613-.213-.973l7.915-7.917c.818-.817 2.267-.699 3.23.262.5.501.802 1.1.849 1.685.051.573-.156 1.111-.589 1.543l-9.547 9.549a3.97 3.97 0 0 1-2.829 1.171 3.975 3.975 0 0 1-2.83-1.173 3.973 3.973 0 0 1-1.172-2.828c0-1.071.415-2.076 1.172-2.83l7.209-7.211c.157-.157.264-.579.028-.814L11.5 4.36a.572.572 0 0 0-.834.018l-7.205 7.207a5.577 5.577 0 0 0-1.645 3.971z"></path>
+                                    </svg>
+                                </a>
+
+                                <span>
+                                    <div id="message-utils-dropdown" class="in-active" style="display: none; position: absolute; bottom: 100px; overflow: hidden; pointer-events: none;left: -8px;background-color: #343a40;">
+                                        <ul class="list-group list-group-flush" style="pointer-events: all;">
+                                            <li class="list-group-item bg-transparent">
+                                                <a href="#" class="text-white">
+                                                    <i class="fa fa-file-pdf" style="padding: 10px 12px; background-color: #29b6f6; border-radius: 50% 50% 50% 50%; font-size: 20px;"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-group-item bg-transparent">
+                                                <a href="#" class="text-white" id="upload-image">
+                                                    <i class="fa fa-camera" style="padding: 10px; background-color: #29b6f6; border-radius: 50% 50% 50% 50%; font-size: 20px;"></i>
+                                                    <input id="CompanyImage" type="file"
+                                                           class="form-control" accept="image/*" style="display: none;">
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </span>
+                            </div>
+
+                            <div style="flex: 1; background-color: blue;border-radius: 10px;min-height: 100%;">
+                                <div contenteditable="true" id="chat-post-content"></div>
+                            </div>
+
+                            <div id="message-send" onclick="OnChat()" class="p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                    <path fill="currentColor" d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- right col -->
+            </div>
+            <!-- /.row (main row) -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.3/signalr.min.js"></script>
+    <script type="text/javascript">
+        var chatMessageContainer = document.getElementsByClassName("direct-chat-messages")[0];
+        chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight;
+    
+        var friendId = '@Html.Raw(friend.Id)';
+    
+        const hubConnection = new signalR.HubConnectionBuilder()
+                                .withUrl("/chathub")
+                                .configureLogging(signalR.LogLevel.Information)
+                                .build();
+        
+        hubConnection.start().then(function () {
+            console.log('connection successful!');
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+        
+        var sendImage = null;
+        
+        async function uploadImage() {
+            if (sendImage === null) return;
+            
+            const data = JSON.stringify(sendImage);
+            
+            const response = await fetch("/Chat/UploadImage", {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: data
+            });
+            
+            const jsonResponse = await response.json();
+            if (jsonResponse.errorCode === 1) {
+                $('#exampleModalCenter').modal('hide');
+            } else {
+                //Error...
+            }
+        }
+        
+        function readFile() {
+            if (this.files && this.files[0]) {
+
+                var FR = new FileReader();
+                
+                const file = this.files[0];
+                
+                FR.addEventListener("load", async function (e) {
+                    const imageBase64 = e.target.result;
+                    const fileName = file.name;
+
+                    sendImage = {
+                        to: friendId,
+                        image: imageBase64,
+                        fileName: fileName
+                    };
+                    
+                    $('#image-preview-body').empty();
+                    
+                    const image = new Image();
+                    image.src = imageBase64;
+                    image.style.width = "100%";
+                    document.getElementById('image-preview-body').appendChild(image);
+                    
+                    $('#exampleModalCenter').modal('show');
+                });
+
+                FR.readAsDataURL(file);
+            }
+        }
+        
+        document.getElementById("CompanyImage").addEventListener("change", readFile);
+        
+        document.getElementById("upload-image").onclick = function (clickEvent) {
+            document.getElementById("CompanyImage").click();
+        }
+        
+        document.getElementById("chat-post-content").onkeydown = function(keyevent) {
+            if (keyevent.code == "Enter") {
+                keyevent.preventDefault();
+                OnChat();
+            }
+        };
+        
+        $("#message-utils-button").on("click", function(event) {
+            const dropDownUtils = $("#message-utils-dropdown");
+            if (dropDownUtils.hasClass("in-active")) {
+                dropDownUtils.fadeIn();
+                dropDownUtils.removeClass("in-active");
+                dropDownUtils.addClass("active");
+            } else {
+                dropDownUtils.fadeOut();
+                dropDownUtils.removeClass("active");
+                dropDownUtils.addClass("in-active");
+            }
+        });
+        
+        hubConnection.on("ReceiveMessage", function (chatId, fromUser, fromCompany, message, timeStamp) {
+            const directChatMsg = document.createElement("div");
+            directChatMsg.id = `message-${chatId}`;
+            directChatMsg.classList.add("direct-chat-msg");
+            directChatMsg.classList.add("left");
+            
+            const directChatInfos = document.createElement("div");
+            directChatInfos.classList.add("direct-chat-infos");
+            directChatInfos.classList.add("clearfix");
+            
+            const directChatName = document.createElement("span");
+             directChatName.classList.add("direct-chat-name");
+             directChatName.classList.add("float-right");
+             directChatName.innerHTML = fromCompany;
+             directChatInfos.appendChild(directChatName);
+             
+            const directChatTime = document.createElement("span");
+            directChatTime.classList.add("direct-chat-timestamp");
+            directChatTime.classList.add("float-left");
+            directChatTime.innerHTML = timeStampToDate(timeStamp);
+            directChatInfos.appendChild(directChatTime);
+            
+            directChatMsg.appendChild(directChatInfos);
+            
+            const directChatImg = document.createElement("img");
+            directChatImg.classList.add("direct-chat-img");
+            directChatImg.src = '@Url.Content("~/logos/" + friend.CompanyLogo)';
+            directChatImg.alt = "message user image";
+            
+            directChatMsg.appendChild(directChatImg);
+            
+            const directChatContent = document.createElement("div");
+            directChatContent.classList.add("direct-chat-text");
+            directChatContent.innerHTML = message;
+            
+            directChatMsg.appendChild(directChatContent);
+         
+            document.getElementsByClassName("direct-chat-messages")[0].appendChild(directChatMsg);
+            chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight;
+        });
+        
+        function OnChat() {
+            const content = document.getElementById("chat-post-content").innerHTML;
+            if (content.length === 0) return;
+            
+            hubConnection.invoke("SendChatMessage", friendId, content).then(t => {
+                if (t.errorCode === -1) { // Error
+                    console.log('error');
+                } else { //Succeed
+                    const directChatMsg = document.createElement("div");
+                    directChatMsg.id = `message-${t.chatId}`;
+                    directChatMsg.classList.add("direct-chat-msg");
+                    directChatMsg.classList.add("right");
+                    
+                    const directChatInfos = document.createElement("div");
+                    directChatInfos.classList.add("direct-chat-infos");
+                    directChatInfos.classList.add("clearfix");
+                    
+                    const directChatName = document.createElement("span");
+                     directChatName.classList.add("direct-chat-name");
+                     directChatName.classList.add("float-right");
+                     directChatName.innerHTML = t.fromCompany;
+                     directChatInfos.appendChild(directChatName);
+                     
+                    const directChatTime = document.createElement("span");
+                    directChatTime.classList.add("direct-chat-timestamp");
+                    directChatTime.classList.add("float-left");
+                    directChatTime.innerHTML = timeStampToDate(t.timeStamp);
+                    directChatInfos.appendChild(directChatTime);
+                    
+                    directChatMsg.appendChild(directChatInfos);
+                    
+                    const directChatImg = document.createElement("img");
+                    directChatImg.classList.add("direct-chat-img");
+                    directChatImg.src = '@Url.Content("~/logos/" + user.CompanyLogo)';
+                    directChatImg.alt = "message user image";
+                    
+                    directChatMsg.appendChild(directChatImg);
+                    
+                    const directChatContent = document.createElement("div");
+                    directChatContent.classList.add("direct-chat-text");
+                    directChatContent.innerHTML = t.message;
+                    
+                    directChatMsg.appendChild(directChatContent);
+                 
+                    document.getElementsByClassName("direct-chat-messages")[0].appendChild(directChatMsg);
+                    chatMessageContainer.scrollTop = chatMessageContainer.scrollHeight;
+                    document.getElementById("chat-post-content").innerHTML = "";
+                }
+            });
+        }
+        
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ];
+        
+        function timeStampToDate(timeStamp) {
+            var date = new Date(timeStamp * 1000);
+            
+            var day = date.getDate();
+            
+            var month = monthNames[date.getMonth()];
+            
+            var time = formatAMPM(date);
+            
+            var formattedTime = `${day} ${month} ${time}`;
+            
+            return formattedTime;
+        }
+        
+        function formatAMPM(date) {
+          var hours = date.getHours();
+          var minutes = date.getMinutes();
+          var ampm = hours >= 12 ? 'pm' : 'am';
+          hours = hours % 12;
+          hours = hours ? hours : 12; // the hour '0' should be '12'
+          minutes = minutes < 10 ? '0'+minutes : minutes;
+          var strTime = hours + ':' + minutes + ' ' + ampm;
+          return strTime;
+        }
+        
+    </script>
+}
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery UI 1.11.4 -->
+<script src="/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>

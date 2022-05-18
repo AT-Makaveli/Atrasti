@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "339525174699",
+    "project_id": "atrasti-test",
+    "storage_bucket": "atrasti-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339525174699:android:b239b9d1721c7645477eee",
+        "android_client_info": {
+          "package_name": "com.atrasti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339525174699-phd9m1tunve2evjhdeipjimt6ehe2pp2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYcAVDycqS6b9RaGjwLigJyhEL6wEa9-8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339525174699-phd9m1tunve2evjhdeipjimt6ehe2pp2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

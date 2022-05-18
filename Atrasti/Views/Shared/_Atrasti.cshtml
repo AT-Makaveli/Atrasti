@@ -1,0 +1,230 @@
+﻿@using Microsoft.AspNetCore.Html
+@inject UserManager<AtrastiUser> _userManager
+@{
+    AtrastiUser user = await _userManager.GetUserAsync(User);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Atrasti</title>
+
+    <link rel="stylesheet" href="~/css/app.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
+    <link rel="stylesheet" href="~/fa/css/all.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    @{
+        HtmlString htmlString = await RenderSectionAsync("Styles", false);
+        @htmlString
+    }
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-50GT5L2LX2');
+    </script>
+</head>
+<body class="bg-dark">
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.min.js" defer></script>
+<script src="~/js/site.js"></script>
+
+<a id="back-to-top" class="fas fa-chevron-up"></a>
+
+<div class="w-100 position bg-light shadow no-transition position-relative" style="z-index: 1" id="navigator">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark text-white">
+        <a class="navbar-brand" href="/">
+            <img src="/img/atrasti_logo.png"/>
+        </a>
+        @if (Context.Request.Path.ToString() != "/Construction")
+        {
+            <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link hover-underline text-white" id="test-link" href="@Url.RouteUrl("About")">About us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hover-underline text-white" href="@Url.RouteUrl("Contact")">Contact</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-blue hover-underline" href="@Url.RouteUrl("Login")">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-blue btn btn-outline-blue" href="@Url.RouteUrl("Register")">Register</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item dropdown">
+                            <a id="navbarDropdown" class="nav-link dropdown-toggle text-blue" href="#" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                @user.Company <span class="caret"></span>
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="@Url.RouteUrl("Profile", new {id = user.Id})">
+                                    Profile
+                                </a>
+                                <a class="dropdown-item" asp-controller="Profile" asp-action="Management">
+                                    Settings
+                                </a>
+
+                                <a class="dropdown-item" asp-controller="Login" asp-action="SignOut">
+                                    Logout
+                                </a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    </nav>
+</div>
+
+
+<div style="min-height: 97vh" class="pb-5">
+    @RenderBody()
+</div>
+
+@if (Context.Request.Path.ToString() != "/Construction")
+{
+    <footer class="page-footer font-small blue pt-6 text-white bg-dark">
+
+        <!-- Footer Links -->
+        <div class="container text-center text-md-left">
+
+            <!-- Grid row -->
+            <div class="row">
+
+                <!-- Grid column -->
+                <div class="col-md-6 mt-md-0 mt-3">
+
+                    <!-- Content -->
+                    <h5>Atrasti</h5>
+                    <p>Atrasti is a platform for value generating searches, <br> we make it easy for companies to find and connect with each other.</p>
+
+                </div>
+                <!-- Grid column -->
+
+                <hr class="clearfix w-100 d-md-none pb-3">
+
+                <!-- Grid column -->
+                <div class="col-md-3 mb-md-0 mb-3">
+
+                    <!-- Links -->
+                    <h5>Links</h5>
+
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("About")">About Us</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("About")">Career</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("Contact")">Contact</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.Action("PrivacyPolicy", "Policies")">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.Action("TermsOfUse", "Policies")">Terms Of Use</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.Action("Cookies", "Policies")">Cookies</a>
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- Grid column -->
+
+                <!-- Grid column -->
+                <div class="col-md-3 mb-md-0 mb-3">
+
+                    <!-- Links -->
+                    <h5>Discover</h5>
+
+                    <ul class="list-unstyled">
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("Popular", new {type = "healthcare"})">Healthcare</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("Popular", new {type = "electronics"})">Electronics</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("Popular", new {type = "entertainment"})">Entertainment</a>
+                        </li>
+                        <li>
+                            <a class="text-white" href="@Url.RouteUrl("Popular", new {type = "clothes"})">Clothes</a>
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- Grid column -->
+
+            </div>
+            <!-- Grid row -->
+
+        </div>
+        <!-- Footer Links -->
+
+        <div class="container">
+
+            <!-- Grid row-->
+            <div class="row">
+
+                <!-- Grid column -->
+                <div class="col-md-12 py-5">
+                    <div class="mb-5 flex-center text-center">
+                        <!-- Facebook -->
+                        <a class="fb-ic text-decoration-none text-white" href="https://www.facebook.com/Atrasti-102494544652031/">
+                            <i class="fab fa-facebook-f fa-lg white-text mr-md-5 mr-3 fa-2x"></i>
+                        </a>
+                        <!--Linkedin -->
+                        <a class="li-ic text-decoration-none text-white" href="https://www.linkedin.com/company/atrasti/">
+                            <i class="fab fa-linkedin fa-lg white-text mr-md-5 mr-3 fa-2x"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- Grid column -->
+
+            </div>
+            <!-- Grid row-->
+
+        </div>
+        <!-- Footer Elements -->
+
+        <!-- Copyright -->
+        <div class="small-padding-side text-center py-3">
+            Atrasti is part of <a href="http://www.imesum.com">Imesum</a> © 2021 Copyright. All rights reserved.
+        </div>
+
+    </footer>
+}
+@{
+    HtmlString scriptString = await RenderSectionAsync("Scripts", false);
+    @scriptString
+}
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-50GT5L2LX2"></script>
+</body>
+</html>

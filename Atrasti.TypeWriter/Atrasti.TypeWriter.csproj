@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Buildalyzer" Version="4.1.3" />
+      <PackageReference Include="Buildalyzer.Workspaces" Version="4.1.3" />
+      <PackageReference Include="NTypewriter" Version="0.3.3" />
+      <PackageReference Include="NTypewriter.CodeModel.Roslyn" Version="0.3.3" />
+      <PackageReference Include="NTypewriter.Editor.Config" Version="0.3.3" />
+    </ItemGroup>
+
+</Project>

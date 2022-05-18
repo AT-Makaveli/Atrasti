@@ -1,0 +1,123 @@
+﻿@model CreatePostModel
+@{
+    ViewData["Title"] = "Index";
+    ForumThread forumThread = (ForumThread)ViewData["forumThread"];
+    IList<ForumPost> forumPosts = (IList<ForumPost>)ViewData["forumPosts"];
+    ForumPost firstPost = forumPosts[0];
+}
+
+<section id="page-top">
+
+    <div id="header-content" class="p-4">
+
+        <div id="hero" class="text-center pb-18"
+             style="border-radius: 0.5rem; background: url(/img/hero/basketball.jpg) center no-repeat; background-size: cover;">
+            <div id="hero-header">
+                <div class="jumbotron bg-transparent">
+                    <h2 class="text-white pt-5">Welcome to Atrasti!</h2>
+                    <h5 class="text-white p-3">
+                        Atrasti is a platform for value generating searches, we make it easy for companies to find
+                        and
+                        connect with each other.
+                    </h5>
+
+                    <form class="w-50 m-auto" id="search-bar">
+                        <div class="input-group">
+                            <input type="text" placeholder="Search ..." class="form-control"
+                                   style="border-top-left-radius: 0.25rem !important; border-bottom-left-radius: 0.25rem !important; border-right:none;">
+                            <div class="input-group-append">
+                                <button type="submit" class="input-group-text"
+                                        style="border-top-right-radius: 0.25rem !important; border-bottom-right-radius: 0.25rem !important; background-color: #fff;">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container" style="padding-top: 3rem;">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="forum-thread-entry p-1" style="border-top: 1px solid #29B6F6">
+                <div class="row" style="padding-right: 15px; padding-left: 15px;">
+                    <div class="thread-header w-100 p-2">
+                        <div class="thread-title float-left">
+                            <h3>@forumThread.Title</h3>
+                        </div>
+                        <div class="thread-date float-right">
+                            <h6>@firstPost.Date.ToString()</h6>
+                        </div>
+                    </div>
+
+                    <div class="thread-body p-2">
+                        <img src="~/logos/@Html.Raw(firstPost.AuthorId + ".png")" width="100" class="float-left p-2" style="border-radius:50%" />
+                        <span>
+                            @firstPost.Text
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            @for (int i = 1; i < forumPosts.Count; i++)
+            {
+                ForumPost post = forumPosts[i];
+                <div class="forum-post-entry p-1" style="border-top: 1px solid #29B6F6">
+                    <div class="row" style="padding-right: 15px; padding-left: 15px;">
+                        <div class="post-header w-100 p-2">
+                            <div class="post-date float-right">
+                                <div class="float-left" style="font-size: 0.75rem;">@post.CompanyName&nbsp;&nbsp;|&nbsp;&nbsp;</div><div class="float-left" style="font-size: 0.7rem;">@post.Date.ToString()</div>
+                            </div>
+                        </div>
+
+                        <div class="post-body p-2">
+                            <img src="~/logos/6.png" width="100" class="float-left p-2" style="border-radius:50%" />
+                            <span>
+                                @post.Text
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-blue w-100 text-white" id="reply-to-thread">Reply to this thread</a>
+            }
+            else
+            {
+                <a class="btn btn-blue w-100 text-white" href="@Url.Action("Index","Login", new { returnUrl = Url.Action("Thread", "Forum", new { id = forumThread.Id }) })">Reply to this thread</a>
+            }
+
+            <div id="forum-post-thread" class="pt-4 d-none">
+                <form method="post">
+                    <div class="form-group">
+                        <label for="PostContent">Make sure to stay ontopic!</label>
+                        <textarea class="form-control" placeholder="Post content..." asp-for="PostContent"></textarea>
+                        <input asp-for="ThreadId" value="@forumThread.Id" type="hidden" />
+                    </div>
+
+                    <button>Post</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        console.log(new Date().getTime());
+        $("#reply-to-thread").on("click", function () {
+            const forumPostThread = $("#forum-post-thread");
+            if (forumPostThread.hasClass("d-none")) {
+                forumPostThread.removeClass("d-none");
+            } else {
+                forumPostThread.addClass("d-none");
+            }
+        });
+    </script>
+}

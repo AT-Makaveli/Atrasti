@@ -1,0 +1,34 @@
+<li class="nav-header">Utilities</li>
+
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-comments"></i>
+                        <p>
+                            Chats
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if (friends.Count > 0)
+                        {
+                            foreach (ChatFriend friend in friends)
+                            {
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Chat", "Profile", new {id = friend.FriendId})" class="nav-link">
+                                        <i class="far nav-icon"></i>
+                                        <p>@friend.FriendCompany</p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="far nav-icon"></i>
+                                    <p>You have no chats.</p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>

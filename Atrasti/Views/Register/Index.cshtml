@@ -1,0 +1,271 @@
+﻿@model Atrasti.Models.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+@section Styles {
+    <style>
+        #body-content {
+            background-size: cover;
+            background: url(@Url.Content("~/img/hero/engineblock.jpg")) center;
+        }
+
+        #login-form-wrapper {
+            padding: 20% 0;
+        }
+
+        @@media(min-width: 576px) {
+            #login-form-wrapper {
+                padding: 20% 10% !important;
+            }
+        }
+
+        @@media (min-width: 768px) {
+            #login-form-wrapper {
+                padding: 15% 10% !important;
+            }
+        }
+
+        .composition {
+            padding: 0;
+        }
+
+            .composition li {
+                box-sizing: border-box;
+                width: 30px;
+                height: 30px;
+                float: left;
+                display: inline-block;
+                color: white;
+                border-radius: 4.29982rem !important;
+                text-align: center;
+                line-height: 30px;
+                margin: 4px 4px 14px 4px;
+            }
+
+        .nok {
+            background-color: #EF5350;
+        }
+
+        .ok {
+            background-color: #4CAF50;
+        }
+    </style>
+}
+
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Registration success!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Your registraion was successful, you need to verify your account in order to login and use our services. It may take up to 2 minutes for the email to arrive. If you still can't find it make sure that you check your spam folder.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-blue" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+@if ((bool) ViewData["registerSuccess"])
+{
+    <script type="text/javascript">
+        $(window).on('load', function () {
+            $('.modal').modal('show');
+        });
+    </script>
+}
+
+<div id="body-content" class="min-vh-100">
+
+    <div class="row">
+        <div class="col-md-5">
+
+        </div>
+
+        <div class="col-md-7 bg-light">
+
+            <div class="container">
+                <div class="min-vh-100" id="login-form-wrapper">
+
+                    <div class="text-center">
+                        <h1 class="display-5">
+                            Join Atrasti
+                        </h1>
+                        <p>Already have an account? Sign in.</p>
+                    </div>
+                    <br/>
+
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <form method="POST">
+                        <div class="form-group">
+                            <label for="Company">Company</label>
+                            <div class="input-group">
+                                <input id="Company" type="text" asp-for="Company"
+                                       class="form-control @(ViewData.ContainsKey("invalid-Company") ? "is-invalid" : "")"
+                                       name="Company" value="@(ViewData.ContainsKey("old-Company") ? ViewData["old-Company"] : "")" required autocomplete="Company"
+                                       style="@(!ViewData.ContainsKey("invalid-Company") ? "border-right: none" : "")"/>
+
+                                @if (ViewData.ContainsKey("invalid-Company"))
+                                {
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>@ViewData["invalid-Company"]</strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-white" style="        background-color: #ffffff">
+                                            <i class="fa fa-building" style="color: #5a6268"></i>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="FirstName">First name</label>
+                                    <div class="input-group">
+                                        <input id="FirstName" type="text" asp-for="FirstName"
+                                               class="form-control @(ViewData.ContainsKey("invalid-FirstName") ? "is-invalid" : "")"
+                                               name="FirstName" value="@(ViewData.ContainsKey("old-FirstName") ? ViewData["old-FirstName"] : "")" required autocomplete="FirstName"
+                                               style="@(!ViewData.ContainsKey("invalid-FirstName") ? "border-right: none" : "")"/>
+
+                                        @if (ViewData.ContainsKey("invalid-FirstName"))
+                                        {
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>@ViewData["invalid-FirstName"]</strong>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <div class="input-group-append">
+                                                <span class="input-group-text text-white" style="background-color: #ffffff">
+                                                    <i class="fa fa-user" style="color: #5a6268"></i>
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="LastName">Last name</label>
+                                    <div class="input-group">
+                                        <input id="LastName" type="text" asp-for="LastName"
+                                               class="form-control @(ViewData.ContainsKey("invalid-LastName") ? "is-invalid" : "")"
+                                               name="LastName" value="@(ViewData.ContainsKey("old-LastName") ? ViewData["old-LastName"] : "")" required autocomplete="LastName"
+                                               style="@(!ViewData.ContainsKey("invalid-LastName") ? "border-right: none" : "")"/>
+
+                                        @if (ViewData.ContainsKey("invalid-LastName"))
+                                        {
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>@ViewData["invalid-LastName"]</strong>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <div class="input-group-append">
+                                                <span class="input-group-text text-white" style="background-color: #ffffff">
+                                                    <i class="fa fa-user-o" style="color: #5a6268"></i>
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Email">Email</label>
+                            <div class="input-group">
+                                <input id="Email" type="text" asp-for="Email"
+                                       class="form-control @(ViewData.ContainsKey("invalid-Email") ? "is-invalid" : "")"
+                                       name="Email" value="@(ViewData.ContainsKey("old-Email") ? ViewData["old-Email"] : "")" required autocomplete="Email"
+                                       style="@(!ViewData.ContainsKey("invalid-Email") ? "border-right: none" : "")"/>
+
+                                @if (ViewData.ContainsKey("invalid-Email"))
+                                {
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>@ViewData["invalid-Email"]</strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-white" style="background-color: #ffffff">
+                                            <i class="fa fa-at" style="color: #5a6268"></i>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Password">Password</label>
+                            <div class="input-group">
+                                <input id="Password" type="password" asp-for="Password" value=""
+                                       class="form-control @(ViewData.ContainsKey("invalid-ConfirmPassword") ? "is-invalid" : "")" name="Password"
+                                       required
+                                       style="@(!ViewData.ContainsKey("invalid-ConfirmPassword") ? "border-right: none" : "")"/>
+                                @if (ViewData.ContainsKey("invalid-ConfirmPassword"))
+                                {
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>@ViewData["invalid-ConfirmPassword"]</strong>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <div class="input-group-append">
+                                        <span class="input-group-text text-white" style="background-color: #ffffff">
+                                            <i class="fa fa-key" style="color: #5a6268"></i>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ConfirmPassword">Confirm password</label>
+                            <div class="input-group">
+                                <input id="ConfirmPassword" asp-for="ConfirmPassword" type="password" class="form-control"
+                                       name="ConfirmPassword" required style="border-right: none"/>
+                                <div class="input-group-append">
+                                    <span class="input-group-text text-white" style="background-color: #ffffff">
+                                        <i class="fa fa-check" style="color: #5a6268"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @section Scripts {
+                            <script src="~/js/xRegExp.js"></script>
+                            <script src="~/js/password.js"></script>
+                        }
+
+                        <div class="form-group">
+                            <ul class="composition">
+                                <li id="pwd_rule_composition_1" class="nok">A-Z</li>
+                                <li id="pwd_rule_composition_2" class="nok">a-z</li>
+                                <li id="pwd_rule_composition_3" class="nok">0-9</li>
+                                <li id="pwd_rule_composition_4" class="nok">!-#</li>
+                                <li id="pwd_rule_composition_5" class="nok">≥8</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" value="Register" class="form-control btn btn-blue">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

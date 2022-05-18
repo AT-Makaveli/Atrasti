@@ -1,0 +1,228 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    IDictionary<string, IList<ForumThread>> forumThreads = (IDictionary<string, IList<ForumThread>>)ViewData["forumThreads"];
+    Subscription subscription = (Subscription) ViewData["hero"];
+}
+
+<section id="page-top">
+
+    <div id="header-content" class="p-4">
+        @if (subscription != null)
+        {
+            <div id="hero" class="text-center pb-18"
+                 style="border-radius: 0.5rem; background: url(@subscription.Data) center no-repeat; background-size: cover;">
+                <div id="hero-header">
+                    <div class="jumbotron bg-transparent">
+                        <h2 class="text-white pt-5">Welcome to the forums!</h2>
+                        <h5 class="text-white p-3">
+                            Atrasti is a platform for value generating searches, we make it easy for companies to find
+                            and
+                            connect with each other.
+                        </h5>
+
+                        <form class="w-50 m-auto" id="search-bar">
+                            <div class="input-group">
+                                <input type="text" placeholder="Search ..." class="form-control"
+                                       style="border-top-left-radius: 0.25rem !important; border-bottom-left-radius: 0.25rem !important; border-right:none;">
+                                <div class="input-group-append">
+                                    <button type="submit" class="input-group-text"
+                                            style="border-top-right-radius: 0.25rem !important; border-bottom-right-radius: 0.25rem !important; background-color: #fff;">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="pt-5">
+                            <a class="popular-tags" href="#" data-toggle="modal" data-target="#exampleModal">Start a discussion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a style="color: white; position: absolute; right: 0; margin: -3.5rem 4.5rem 0 0;" href="@Url.Action("Index", "Profile", new { subscription.CompanyId })" class="text-decoration-none"><h5>@subscription.User.Company</h5></a>
+        }
+        else
+        {
+            <div id="hero" class="text-center pb-18"
+                 style="border-radius: 0.5rem; background: url(/img/hero/basketball.jpg) center no-repeat; background-size: cover;">
+                <div id="hero-header">
+                    <div class="jumbotron bg-transparent">
+                        <h2 class="text-white pt-5">Welcome to Atrasti!</h2>
+                        <h5 class="text-white p-3">
+                            Atrasti is a platform for value generating searches, we make it easy for companies to find
+                            and
+                            connect with each other.
+                        </h5>
+
+                        <form class="w-50 m-auto" id="search-bar">
+                            <div class="input-group">
+                                <input type="text" placeholder="Search ..." class="form-control"
+                                       style="border-top-left-radius: 0.25rem !important; border-bottom-left-radius: 0.25rem !important; border-right:none;">
+                                <div class="input-group-append">
+                                    <button type="submit" class="input-group-text"
+                                            style="border-top-right-radius: 0.25rem !important; border-bottom-right-radius: 0.25rem !important; background-color: #fff;">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="pt-5">
+                            <a class="popular-tags" href="#" data-toggle="modal" data-target="#exampleModal">Start a discussion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Start a new discussion.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Make sure to be descriptive and stay on topic during discussions.
+                <form>
+                    <div class="form-group">
+                        <label for="title-name" class="col-form-label">Title:</label>
+                        <input type="text" class="form-control" id="title-name">
+
+                        <label for="body-name" class="col-form-label">Body:</label>
+                        <textarea type="text" class="form-control"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/assets/owl.theme.default.min.css">
+    <style>
+        .trending-topics {
+            padding: 5px;
+            height: 250px;
+        }
+
+        .topics {
+            padding: 5px;
+            height: 250px;
+        }
+
+        .trending-img-top {
+            border-top-left-radius: calc(0.1rem - 1px);
+            border-top-right-radius: calc(0.1rem - 1px);
+            background-size: cover;
+            height: 250px;
+        }
+
+        .owl-topic {
+            height: 150px
+        }
+
+        .owl-topic-title {
+            position: absolute;
+            bottom: 0;
+            padding: 5px;
+            font-size: 18px;
+            color: white;
+        }
+
+        .owl-topic {
+            background: rgba(0, 0, 0, 0.20);
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="~/js/owl.carousel.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".owl-carousel").owlCarousel({
+                items: 4,
+                loop: true,
+                margin: 10,
+                autoplay: true,
+                autoplayTimeout: 5000,
+                autoplayHoverPause: true
+            });
+        });
+    </script>
+}
+
+<div class="big-container pb-5">
+    <div class="row">
+        <div id="trending-section" class="w-100">
+            <h1>Trending topics</h1>
+            <div class="col-4 float-left trending-topics">
+                <div class="card" style="height: 100%">
+                    <div class="trending-img-top" style="background: url(https://images.eniro.com/covers/henrik-johanssons-transport-ab-15003894-1477657617260?name=large) center no-repeat;"></div>
+                    <div class="card-body" style="opacity: 1; background: rgba(0, 0, 0, 0.20);">
+                        <div style="position:absolute; bottom: 1.25rem;">
+                            <h5>Title here I am</h5>
+                            <p class="card-text">Description here I am</p>
+                        </div>
+                        <a href="#" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 float-left trending-topics">
+                <div class="card" style="height: 100%">
+                    <div class="trending-img-top" style="background: url(https://images.eniro.com/covers/henrik-johanssons-transport-ab-15003894-1477657617260?name=large) center no-repeat;"></div>
+                    <div class="card-body" style="opacity: 1; background: rgba(0, 0, 0, 0.20);">
+                        <div style="position:absolute; bottom: 1.25rem;">
+                            <h5>Title here I am</h5>
+                            <p class="card-text">Description here I am</p>
+                        </div>
+                        <a href="#" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>            
+            <div class="col-4 float-left trending-topics">
+                <div class="card" style="height: 100%">
+                    <div class="trending-img-top" style="background: url(https://images.eniro.com/covers/henrik-johanssons-transport-ab-15003894-1477657617260?name=large) center no-repeat;"></div>
+                    <div class="card-body" style="opacity: 1; background: rgba(0, 0, 0, 0.20);">
+                        <div style="position:absolute; bottom: 1.25rem;">
+                            <h5>Title here I am</h5>
+                            <p class="card-text">Description here I am</p>
+                        </div>
+                        <a href="#" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (forumThreads != null)
+    {
+        foreach (KeyValuePair<string, IList<ForumThread>> forumThreadsPair in forumThreads)
+        {
+            <div class="row pt-5">
+                <div id="topics" class="w-100">
+                    <h3>@forumThreadsPair.Key</h3>
+                    <div class="owl-carousel">
+                        @foreach (ForumThread forumThread in forumThreadsPair.Value)
+                        {
+                            <a href="@Url.Action("Thread", "Forum", new { id = forumThread.Id })">
+                                <div class="owl-topic">
+                                    <div class="owl-topic-image" style="height: 100%;background: url(https://images.eniro.com/covers/henrik-johanssons-transport-ab-15003894-1477657617260?name=large) center no-repeat;"></div>
+                                    <div class="owl-topic-title">@forumThread.Title</div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

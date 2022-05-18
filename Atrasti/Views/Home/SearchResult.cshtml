@@ -1,0 +1,207 @@
+﻿
+@{
+    ViewData["Title"] = "Search Results";
+    ICollection<AtrastiUser> companies = (ICollection<AtrastiUser>)ViewData["companies"];
+}
+
+@section Styles
+{
+    <style>
+    .search-result-information {
+        width: 40%;
+    }
+    
+    .search-result-description {
+        width: 60%;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+    
+    @@media(max-width: 576px) {
+        .search-result-description {
+            display: none;
+        }
+        
+        .search-result-left {
+            flex: 0 0 30% !important;
+            max-width: 30% !important;
+        }
+        
+        .search-result-right {
+            flex: 0 0 70% !important;
+            max-width: 70% !important;
+        }
+        
+        .search-result-information {
+            width: 100% !important;
+        }
+        
+        .search-result-information h2 {
+            font-size: 1.3rem !important;
+        }
+        
+        .search-result-information h5 {
+            font-size: 1rem !important;
+        }
+    }
+    
+            #search-drop-down {
+                background-color: white;
+                text-align: left;
+                position: absolute;
+                width: 100%;
+                border-bottom-left-radius: 20px;
+                border-bottom-right-radius: 20px;
+                padding-bottom: 10px;
+                overflow: hidden;
+            }
+    
+                #search-drop-down a {
+                    padding: 5px 0.75rem;
+                    font-size: 16px;
+                    width: 100%;
+                    text-decoration: none;
+                    display: inline-block;
+                }
+                
+                #search-drop-down a:hover {
+                    background-color: #eeeeee;
+                }
+                
+            #search-bar {
+                height: 44px;
+                font-size: 16px;
+            }
+            
+            #search-bar:focus {
+                box-shadow: none !important;
+            }
+            
+            #search-group {
+                border: 1px solid #dfe1e5;
+                height: 44px;
+                overflow: hidden;
+            }
+            
+            #search-group.no-result {
+                border-radius: 20px;
+            }
+            
+            #search-group.has-result {
+                border-radius: 20px;
+                border-bottom-left-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+            }
+            
+            #search-group:hover {
+                box-shadow: 0 1px 6px rgba(32,33,36,.28);
+            }
+    </style>
+}
+
+<section id="page-content" class="pt-3 pb-3">
+    <div class="container pt-5 text-white">
+        <h1>Search results</h1>
+        <form class="w-100" id="search-bar-form" method="POST" asp-action="SearchResult">
+            <div class="input-group no-result" id="search-group">
+                <input id="search-bar" autocomplete="off" name="searchString" type="text" placeholder="Search ..." class="form-control border-0">
+                <div class="input-group-append">
+                    <div class="input-group-text bg-white border-0">
+                        <i class="fa fa-search"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <div id="search-drop-down" class="d-none">
+                </div>
+            </div>
+        </form>
+
+
+        @if (companies.Count > 0)
+        {
+            <div class="search-entries pt-5">
+                @foreach (AtrastiUser company in companies)
+                {
+                    <div class="search-entry pt-5">
+                        <a href="@Url.RouteUrl("Profile", new { id = company.Id })" class="w-100">
+                            <div class="row">
+                                <div class="col-2 search-result-left">
+                                    <img src="@Url.Content("~/logos/" + company.CompanyLogo)" style="border-radius: 50%; width: 100%" />
+                                </div>
+                                <div class="col-10 search-result-right">
+                                    <div class="float-left text-white search-result-information">
+                                        <h2>@company.Company</h2>
+                                        <h5>@company.CompanyModel.Country, @company.CompanyModel.City</h5>
+                                        <label for="address">Address</label>
+                                        <span id="address">@company.CompanyModel.Address</span>
+                                    </div>
+                                    <div class="float-left text-white search-result-description">
+                                        @company.CompanyModel.CompanyDesc
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span style="padding: 0.375rem 0.75rem;display: inline-block;">There are no search results for this query.</span>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        setInterval(function () {
+            const value = $("#search-bar").val();
+            if (value.length != 0) {
+                onSearch(value);
+            } else {
+                const searchDropDown = $("#search-drop-down");
+                searchDropDown.children().remove();
+                searchDropDown.removeClass('d-block').addClass('d-none');
+                $("#search-group").removeClass("has-result").addClass("no-result");
+            }
+        }, 500);
+
+        var oldValue = "";
+
+        function onSearch(search) {
+            if (oldValue !== search) {
+                var dataValue = { "search": search };
+                $.ajax("/Search/SearchProducts",
+                    {
+                        type: "POST",
+                        data: dataValue,
+                        complete: (result) => {
+                            const jsonResponse = result.responseJSON;
+                            const searchDropDown = $("#search-drop-down");
+                            if (jsonResponse.result === "found") {
+                                searchDropDown.children().remove();
+                                const entities = jsonResponse.entities;
+                                for (const entity of entities) {
+                                    $button = $('<a href="#">' + entity.title + '</a>').appendTo(searchDropDown);
+                                    $button.on("click", () => {
+                                        $("#search-bar-form").submit();
+                                    });
+                                }
+                                
+                                searchDropDown.removeClass('d-none').addClass('d-block');
+                                $("#search-group").removeClass("no-result").addClass("has-result");
+                            }
+                            else if (jsonResponse.result == "none") {
+                                searchDropDown.children().remove();
+                                searchDropDown.removeClass('d-block').addClass('d-none');
+                                $("#search-group").removeClass("has-result").addClass("no-result");
+                            }
+                        }
+                    });
+
+                oldValue = search;
+            }
+        }
+    </script>
+}

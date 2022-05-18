@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewData["Title"] = "Search Results";
+    ICollection<AtrastiUser> companies = (ICollection<AtrastiUser>)ViewData["companies"];
+}
+
+<section id="page-content" class="pt-3 pb-3">
+    <div class="container pt-5 text-white">
+        <h1>Discover</h1>
+
+
+        @if (companies.Count > 0)
+        {
+            <div class="search-entries pt-5">
+                @foreach (AtrastiUser company in companies)
+                {
+                    <div class="search-entry pt-5">
+                        <a href="@Url.RouteUrl( "Profile", new { id = company.Id })" class="w-100">
+                            <div class="row shadow">
+                                <div class="col-2">
+                                    <img src="~/logos/@company.CompanyLogo" style="border-radius: 50%; width: 100%" />
+                                </div>
+                                <div class="col-10">
+                                    <div class="float-left text-white" style="width: 40%">
+                                        <h2>@company.Company</h2>
+                                        <h5>@company.CompanyModel.Country, @company.CompanyModel.City</h5>
+                                        <label for="address">Address</label>
+                                        <span id="address">@company.CompanyModel.Address</span>
+                                    </div>
+                                    <div class="float-left text-white" style="width: 60%; max-height: 150px; overflow-y: scroll;">
+                                        <p>@company.CompanyModel.CompanyDesc</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <span style="padding: 0.375rem 0.75rem;display: inline-block;">There are no search results for this query.</span>
+        }
+    </div>
+</section>

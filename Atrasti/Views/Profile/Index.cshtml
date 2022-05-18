@@ -1,0 +1,600 @@
+﻿@model ProductModel
+@{
+    ViewData["Title"] = "Profile";
+    AtrastiUser user = (AtrastiUser) ViewData["user"];
+    ICollection<Product> products = (ICollection<Product>) ViewData["products"];
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="~/lib/croppie/croppie.css"/>
+    <style>
+        #profile-tabs ul li {
+            display: inline-block;
+            padding: 5px 5px 0 5px;
+        }
+        
+        .nav-tabs-p {
+            padding: 0.25rem 0.25rem 0 0.25rem !important
+        }
+
+            #product-tabs li a {
+                text-decoration: none;
+                color: #fff !important;
+                border: 1px solid transparent;
+                transition: ease-in 200ms;
+            }
+            
+            #product-tabs li a:hover {
+            border: 1px solid transparent !important;
+            background-color: #424a51
+            }
+
+        #user-overview div div {
+            padding: 0.75rem;
+            float: left;
+            color: white;
+        }
+
+        #user-overview div div:nth-child(odd) {
+            color: #29B6F6
+        }
+        
+        .form-control {
+            background-color: #58616a !important;
+            color: white !important;
+            border-color: #7d8b99 !important;
+        }
+        
+        #tags > input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+                       color: #fff;
+                       opacity: 1; /* Firefox */
+                     }
+                     
+        #tags > input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: #fff;
+        }
+        
+        #tags > input::-ms-input-placeholder { /* Microsoft Edge */
+        color: #fff;
+        }
+        
+        .wrapper {
+            min-height: 97vh;
+            background-color: rgb(33, 37, 40) !important;
+        }
+        
+        .border-bottom {
+         border-bottom: 1px solid #8c9094 !important
+        }
+        
+        #profile-picture > img {
+            background: #212528;
+            width: 170px;
+            padding: 5px;
+            border-radius: 50%;
+        }
+        
+        .active {
+            display: block !important;
+        }
+        
+        .settings-icon:after {
+          content: '\2807';
+          font-size: 16px;
+        }
+        
+        .settings-toggle {
+            border: none !important;
+            background: none;
+        }
+        
+        .settings-options > a {
+            display: table-row;
+        }
+        
+        .p-warning {
+            padding: 0.5rem 2rem !important;
+        }
+    </style>
+}
+
+@if ((bool) ViewData["profileOwner"])
+{
+    <div class="modal fade" id="inviteModalCenter" tabindex="-1" role="dialog" aria-labelledby="inviteModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inviteModalCenterTitle">Invite people</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="pb-2">
+                        This is your unique invitation link, copy and send it to invite a business partner.
+                    </div>
+
+                    <div>
+                        <div class="input-group">
+                            <input id="referral-link" value="@ViewData["referral_link"]" readonly="readonly"/>
+                            <div class="input-group-append">
+                                <button class="btn btn-blue" id="copy-referral">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (user.CompanySetup && user.CompanyInfoSetup)
+{
+    <div class="wrapper shadow" style="padding-bottom: 5rem;">
+    <section id="page-top">
+
+        <div id="header-content">
+            <div id="hero" class="pb-7 bg-light shadow">
+                <div id="hero-header" class="pt-5" style="height: 125px">
+                </div>
+            </div>
+
+            <div class="container text-white" style="        min-height: 180px;
+        margin-top: -90px;
+">
+                <div id="profile-picture" style="float: left; width: 180px">
+                    @if (user.CompanyLogo != null)
+                    {
+                        <img src="/logos/@(user.CompanyLogo)" alt="profile picture"/>
+                    }
+                </div>
+
+                <div id="profile-description" style="float: left">
+                    <ul style="list-style-type: none;margin-top: 110px; padding-left: 10px;">
+                        <li>
+                            <h3>@(user.Company)</h3>
+                        </li>
+                        <li>
+                            <p>@(user.CompanyModel.City), @(user.CompanyModel.Country)</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="w-100 float-left text-white-50">
+                    <p>@(user.CompanyModel.CompanyDesc)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="page-content" style="padding: 100px 0 50px 0">
+    <div class="container">
+
+    <div id="profile-tabs">
+    <ul class="nav-tabs-p nav nav-tabs">
+        <li class="nav-item">
+            <a href="#products" class="nav-link active text-white" data-toggle="tab">Products</a>
+        </li>
+        <li class="nav-item">
+            <a href="#overview" class="nav-link text-white" data-toggle="tab">Overview</a>
+        </li>
+        @if ((bool) ViewData["profileOwner"])
+        {
+            <li class="nav-item">
+                <a href="#product-management" class="nav-link text-white" data-toggle="tab">Product Management</a>
+            </li>
+            <li class="nav-item">
+                <a href="@Url.Action("Management", "Profile")" class="nav-link text-white">
+                    <i class="fas fa-user-cog"></i>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-toggle="modal" data-target="#inviteModalCenter" class="nav-link text-white">
+                    <i class="fas fa-user-plus"></i>
+                </a>
+            </li>
+        }
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="products">
+            <div id="profile-tab-1" class="tab-pane fade show active">
+                <div class="row">
+                    @foreach (Product model in products)
+                    {
+                        string modalName = "modal" + model.Id;
+                        string modalWarning = modalName + "-warning";
+                        <div class="card item-entry">
+                            <a href="#" data-toggle="modal" data-target="#@Html.Raw(modalName)" class="product-">
+                                <img class="card-img-top" src="@Url.Content("~/products/" + model.Image)" alt="product image">
+                            </a>
+
+                            <div class="modal fade" id="@Html.Raw(modalName)" tabindex="-1" role="dialog" aria-labelledby="@Html.Raw(modalName)Label" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="row">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="col-12">
+                                                <img src="@Url.Content("~/products/" + model.Image)" class="d-block ml-auto mr-auto">
+                                            </div>
+                                            <div class="modal-body ml-3">
+                                                <h5 class="modal-title font-weight-bold" id="@Html.Raw(modalName)Label">@Html.Raw(model.Title)</h5>
+                                                <b>@Html.Raw(user.Company)</b> @Html.Raw(model.Description)
+                                                @if (model.ProductLikes.Contains(user.Id))
+                                                {
+                                                    <div style="margin-top: 0.5rem">
+                                                        <a href="#" class="text-black-50 unlike-button" data-target="@Html.Raw(model.Id)">
+                                                            <i class="fas fa-heart"></i>
+                                                        </a>
+                                                        <b>Likes: <span id="@Html.Raw(model.Id)likes">@Html.Raw(model.ProductLikes.Count)</span></b>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div style="margin-top: 0.5rem">
+                                                        <a href="#" class="text-black-50 like-button" data-target="@Html.Raw(model.Id)">
+                                                            <i class="far fa-heart"></i>
+                                                        </a>
+                                                        <b>Likes: <span id="@Html.Raw(model.Id)likes">@Html.Raw(model.ProductLikes.Count)</span></b>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="modal-footer">
+                                                <div class="btn-group dropleft">
+                                                    <button type="button" class="settings-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <div class="settings-icon"></div>
+                                                    </button>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                                        <button class="dropdown-item delete-product" data-target="@Html.Raw(model.Id)" type="button">Delete Product</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 p-warning" id="@Html.Raw(modalWarning)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="overview">
+            <div class="container">
+                <div class="row" id="user-overview">
+                    <div class="w-50">
+                        <div class="w-30">Business type:</div>
+                        <div class="w-70">@user.CompanyModel.CompanyInfo.BusinessType</div>
+                        <div class="w-30">Main markets:</div>
+                        <div class="w-70">@user.CompanyModel.CompanyInfo.MainMarkets</div>
+                        <div class="w-30">Main products:</div>
+                        <div class="w-70">@user.CompanyModel.CompanyInfo.MainProducts</div>
+                        <div class="w-30">Website:</div>
+                        <div class="w-70">
+                            @if (user.CompanyModel.Website.ToLower().Contains("www") || user.CompanyModel.Website.ToLower().Contains("http") || user.CompanyModel.Website.Split(".").Length > 1)
+                            {
+                                <a href="@user.CompanyModel.Website">@user.CompanyModel.Website</a>
+                            }
+                            else
+                            {
+                                @user.CompanyModel.Website
+                            }
+                        </div>
+                    </div>
+                    <div class="w-50">
+                        <div class="w-30">Year established:</div>
+                        <div class="w-70">@user.CompanyModel.CompanyInfo.YearEstablished</div>
+                        <div class="w-30">Certificates:</div>
+                        @if (string.IsNullOrEmpty(user.CompanyModel.CompanyInfo.Certificates))
+                        {
+                            <div class="w-70">&nbsp;</div>
+                        }
+                        else
+                        {
+                            <div class="w-70">@user.CompanyModel.CompanyInfo.Certificates</div>
+                        }
+                        <div class="w-30">Capacity:</div>
+                        <div class="w-70">@user.CompanyModel.CompanyInfo.Capacity</div>
+                        <div class="w-30">Phone number:</div>
+                        <div class="w-70">@user.PhoneNumber</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="product-management">
+            <div class="container pt-4">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="text-white bg-dark">
+                            <h5 class="card-header border-bottom semi-bold">
+                                Featured
+                            </h5>
+                            <ul class="nav nav-tabs side-nav border-none" id="product-tabs">
+                                <li class="nav-item p-0 w-100">
+                                    <a href="#add-product-box" class="nav-link p-3" data-toggle="tab">Add product</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Left col -->
+                    <section class="col-lg-9 connectedSortable">
+                        <div class="box p-2 box-primary text-white bg-dark d-none active" id="add-product-box">
+                            <div class="box-header with-border">
+                                <h4 class="box-title semi-bold">Add product</h4>
+                            </div>
+                            <!-- /.box-header -->
+                            <!-- form start -->
+                            <form method="post" id="add-product-form" enctype="multipart/form-data"
+                                  action="@Url.Action("ProductPost", "Profile")">
+                                <div class="form-group">
+                                    <label for="Title">Title</label>
+                                    <input id="Title" type="text"
+                                           class="form-control"
+                                           asp-for="Title" required/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Description">Description</label>
+                                    <input id="Description" type="text"
+                                           class="form-control"
+                                           asp-for="Description" required/>
+                                </div>
+                                <div class="form-group">
+                                    <input type="hidden" id="tags-input" asp-for="Tags"/>
+                                    <label for="Tags">Tags</label>
+                                    <div id="tags">
+                                        <input id="Tag1" placeholder="Tag 1" style="margin-bottom: 15px;" type="text" class="form-control"/>
+                                    </div>
+                                    <span>
+                                        Add tags:
+                                        <a id="add-tags" href="#">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    </span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="Image">Product Image</label>
+                                    <input id="Image" type="file"
+                                           class="form-control" accept="image/*" required>
+                                    <input type="hidden" id="imagebase64" asp-for="Image">
+                                    <div id="crop-image"></div>
+                                </div>
+
+                                <a class="btn btn-primary ml-auto" id="product-submit">Add product</a>
+                            </form>
+                        </div>
+                    </section>
+
+                    @section Scripts {
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+                        <script src="~/plugins/toastr/toastr.min.js"></script>
+                        <script src="~/lib/croppie/croppie.min.js"></script>
+                        <script>
+                    $('.delete-product').on('click', function () {
+                        const target = this.getAttribute("data-target");
+                        const modalName = "modal" + target;
+                        const modalWarning = modalName + "-warning";
+                        const warningContent = document.getElementById(modalWarning);
+                        warningContent.innerHTML = '';
+                        
+                        warnDeleteProduct(target,  warningContent);
+                    });
+                    
+                    /*
+                                                     <p class="d-inline-block">Are you sure you want to delete this product?</p>
+                                                                    <button type="button" class="btn btn-danger">
+                                                                        Yes
+                                                                    </button>
+                     */
+                    
+                    function warnDeleteProduct(productId, warningContent) {
+                        const message = document.createElement("p");
+                        message.innerHTML = 'Are you sure you want to delete this product? ';
+                        message.classList.add('d-inline-block');
+                        
+                        const button = document.createElement("button");
+                        button.type = 'button';
+                        button.classList.add('btn');
+                        button.classList.add('btn-danger');
+                        button.classList.add('ml-3');
+                        
+                        button.onclick = function () {
+                            const dataValue = { "itemId": productId };
+                            $.ajax("/Profile/DeleteProduct", 
+                            {
+                                type: "POST",
+                                data: dataValue,
+                                complete: (result) => {
+                                    if (result.statusText === "error") {
+                                    }
+                                    else {
+                                        location.reload();
+                                    }
+                                }
+                            })
+                        }
+                        
+                        button.innerHTML = 'Yes';
+                        warningContent.appendChild(message);
+                        warningContent.appendChild(button);
+                    }
+                    
+                                        function validateForm() {
+                                            return $('#Title').val().length !== 0 &&
+                                                $('#Description').val().length !== 0 &&
+                                                $('#tags-input').val().length !== 0 &&
+                                                $('#imagebase64').val().length !== 0;
+                                        }
+
+                                        setupLikeButtons();
+                                        setupUnlikeButtons();
+
+                                        function setupLikeButtons() {
+                                            const likeButtons = document.getElementsByClassName("like-button");
+                                            for (var likeButton of likeButtons) {
+                                                const itemId = likeButton.getAttribute("data-target");
+                                                likeButton.onclick = () => {
+                                                    var dataValue = { "itemId": itemId };
+                                                    $.ajax("/Like/LikePost",
+                                                        {
+                                                            type: "POST",
+                                                            data: dataValue,
+                                                            complete: (result) => {
+                                                                if (result.responseJSON.result === "success") {
+                                                                    const likeButton = $("a[data-target='" + itemId + "']");
+                                                                    likeButton.removeClass("like-button");
+                                                                    likeButton.addClass("unlike-button");
+                                                                    likeButton.children()[0].remove();
+                                                                    likeButton.append('<i class="fas fa-heart"></i>');
+                                                                    var computerScore = document.getElementById(itemId + 'likes');
+                                                                    var number = computerScore.innerHTML;
+                                                                    number++;
+                                                                    computerScore.innerHTML = number;
+                                                                    console.log(likeButton);
+                                                                    setupLikeButtons();
+                                                                    setupUnlikeButtons();
+                                                                }
+                                                            }
+                                                        });
+                                                };
+                                            }
+                                        }
+                                        
+                                        const referralButton = document.getElementById('copy-referral');
+                                        referralButton.onclick = function (){
+                                            if (referralButton !== undefined) {
+                                                const referralInput = document.getElementById('referral-link');
+                                                referralInput.select();
+                                                referralInput.setSelectionRange(0, 99999); /* For mobile devices */
+                                                
+                                                document.execCommand("copy");
+                                                toastr.success('Link copied to clipboard!')
+                                            }
+                                        };
+                                        function setupUnlikeButtons() {
+                                            const unlikeButtons = document.getElementsByClassName("unlike-button");
+                                            for (var likeButton of unlikeButtons) {
+                                                const itemId = likeButton.getAttribute("data-target");
+                                                likeButton.onclick = () => {
+                                                    var dataValue = { "itemId": itemId };
+                                                    $.ajax("/Like/UnlikePost",
+                                                        {
+                                                            type: "POST",
+                                                            data: dataValue,
+                                                            complete: (result) => {
+                                                                if (result.responseJSON.result === "success") {
+                                                                    const likeButton = $("a[data-target='" + itemId + "']");
+                                                                    likeButton.removeClass("unlike-button");
+                                                                    likeButton.addClass("like-button");
+                                                                    likeButton.children()[0].remove();
+                                                                    likeButton.append('<i class="far fa-heart"></i>');
+                                                                    var computerScore = document.getElementById(itemId + 'likes');
+                                                                    var number = computerScore.innerHTML;
+                                                                    number--;
+                                                                    computerScore.innerHTML = number;
+                                                                    setupUnlikeButtons();
+                                                                    setupLikeButtons();
+                                                                }
+                                                            }
+                                                        });
+                                                };
+                                            }
+                                        }
+                                        var crop;
+
+                                        function readFile() {
+
+                                            if (this.files && this.files[0]) {
+
+                                                var FR = new FileReader();
+
+                                                FR.addEventListener("load", function (e) {
+                                                    if (crop !== undefined) {
+                                                        $('#crop-image').croppie('bind', {
+                                                            url: e.target.result
+                                                        });
+                                                    } else {
+                                                        crop = $('#crop-image').croppie({
+                                                            url: e.target.result,
+                                                            viewport: { width: 260, height: 200 },
+                                                            boundary: { width: 300, height: 300 },
+                                                        });
+                                                    }
+                                                });
+
+                                                FR.readAsDataURL(this.files[0]);
+                                            }
+
+                                        }
+                                        
+                                        $('#product-submit').on('click', function () {
+                                            if (crop != undefined) {
+                                                crop.croppie('result', {
+                                                    type: 'canvas',
+                                                    size: 'viewport'
+                                                }).then(function (blob) {
+                                                    $('#imagebase64').val(blob);
+                                                    $('#tags-input').val(getTags());
+                                                    if (validateForm()) {
+                                                        $('#add-product-form').submit();
+                                                    } else {
+                                                        showErrors();
+                                                    }
+                                                });
+                                            } else {
+                                                showErrors();
+                                            }
+                                        });
+
+                                        function showErrors() {
+                                            $("#add-product-error").addClass("d-block");
+                                        }
+
+                                        document.getElementById("Image").addEventListener("change", readFile);
+
+                                        let tagsCount = 1;
+                                        $('#add-tags').on('click', function (event) {
+                                            event.preventDefault();
+                                            tagsCount++;
+                                            
+                                            $('<input>').attr({
+                                                id: 'Tag' + tagsCount,
+                                                style: 'margin-bottom: 15px;',
+                                                type: 'text',
+                                                class: 'form-control',
+                                                placeholder: 'Tag ' + tagsCount
+                                            }).appendTo('#tags');
+                                        });
+
+                                        function getTags() {
+                                            const tags = [];
+                                            for (let i = 1; i <= tagsCount; i++) {
+                                                tags[i - 1] = $('#Tag' + i).val();
+                                            }
+
+                                            return JSON.stringify(tags);
+                                        }
+                                    </script>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    </div>
+    </section>
+    </div>
+}

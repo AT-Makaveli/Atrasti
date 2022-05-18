@@ -1,0 +1,30 @@
+﻿@if ((bool) ViewData["profileOwner"])
+{
+    <div class="profile-not-exist" style="
+        height: 100vh;
+    min-height: 40rem;
+    padding-bottom: 0;
+    background-size: cover;
+    background: url(@Url.Content("~/img/profile/notexist.jpg")) center;">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center justify-content-center text-center">
+                <div class="col-lg-10 align-self-end">
+                    <h1 class="text-uppercase text-white font-weight-bold">
+                        This profile does not exist right
+                        now.
+                    </h1>
+                </div>
+                <div class="col-lg-8 align-self-baseline">
+                    <p class="text-white font-weight-light mb-2">
+                        Currently noone can find your profile, if you wish to set it up and make yourself accessible
+                        for everyone, do it now!
+                    </p>
+                    <a class="btn btn-success btn-xl js-scroll-trigger" href="@Url.Action("Management", "Profile")">
+                        Setup
+                        now!
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

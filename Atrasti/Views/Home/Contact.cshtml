@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Index";
+
+}
+
+@section Styles {
+    <style>
+    .form-control {
+        background-color: #58616a !important;
+        color: white !important;
+        border-color: #7d8b99 !important;
+    }
+    
+    .form-control::placeholder {
+      color: white !important;
+      opacity: 0.5 !important;
+    }
+    
+    .form-control:-ms-input-placeholder {
+      color: white !important;
+      opacity: 0.5 !important;
+    }
+    
+    .form-control::-ms-input-placeholder { /* Microsoft Edge */
+      color: white !important;
+      opacity: 0.5 !important;
+    }
+    
+    .card {
+        border: 1px solid #58616a !important;
+    }
+</style>
+}
+
+<section id="page-top">
+
+    <div id="header-content" class="p-4">
+
+        <div id="hero" class="text-center pb-18"
+             style="border-radius: 0.5rem; background: url(@Url.Content("~/img/hero/basketball.jpg")) center no-repeat; background-size: cover;">
+            <div id="hero-header">
+                <div class="jumbotron bg-transparent">
+                    <h2 class="text-white pt-5">Welcome to Atrasti!</h2>
+                    <h5 class="text-white p-3">
+                        Atrasti is a platform for value generating searches, we make it easy for companies to find
+                        and
+                        connect with each other.
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="page-content" class="pt-3 pb-3 shadow">
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card bg-transparent">
+                    <div class="card-header border-0 text-white pb-0">
+                        <h3 class="mb-0">Contact Us</h3>
+                    </div>
+                    <div class="card-body bg-transparent position-relative">
+                        <form asp-controller="Home" asp-action="Contact" method="POST">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email address</label>
+                                <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" placeholder="Enter email" required>
+                                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Subject</label>
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Enter subject" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="6" required></textarea>
+                            </div>
+                            <div class="mx-auto">
+                                <button type="submit" class="btn btn-blue text-right">Send Message</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-4">
+                <div class="card border-0 bg-transparent mb-3">
+                    <div class="card-header text-white">
+                        <h3 class="mb-0">General</h3>
+                    </div>
+                    <div class="card-body bg-transparent position-relative">
+                        <p>You can use the contact form to get in touch with us. We respond to emails as soon as possible!</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,30 @@
+{{- for class in data.Classes | Symbols.WhereNameEndsWith "_Req"
+    capture output -}}
+{{- for type in (class | Type.AllReferencedTypes)}}
+{{ "import { " | String.Append type | String.Append " } from './" | String.Append type | String.Append "';" }}
+{{-end}}
+
+export interface {{ class.Name }} {
+    {{- for property in class.Properties | Symbols.ThatArePublic }}
+    {{ property.Name | String.ToCamelCase }}: {{ property.Type | Type.ToTypeScriptType }};
+        {{- end }}
+}
+{{- end
+    filePath =  "../Atrasti.ReactNative/Atrasti/src/Api/Models/Requests/" | String.Append class.BareName | String.Append ".ts"
+    Save output filePath
+    end }}
+{{- for class in data.Classes | Symbols.WhereNameEndsWith "_Res"
+    capture output -}}
+{{- for type in (class | Type.AllReferencedTypes)}}
+{{ "import { " | String.Append type | String.Append " } from './" | String.Append type | String.Append "';" }}
+{{-end}}
+
+export interface {{ class.Name }} {
+    {{- for property in class.Properties | Symbols.ThatArePublic }}
+    {{ property.Name | String.ToCamelCase }}: {{ property.Type | Type.ToTypeScriptType }};
+        {{- end }}
+}
+{{- end
+    filePath = "../Atrasti.ReactNative/Atrasti/src/Api/Models/Responds/" | String.Append class.BareName | String.Append ".ts"
+    Save output filePath
+    end }}
