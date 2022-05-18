@@ -38,17 +38,19 @@ namespace Atrasti.API.Controllers
         [Authorize]
         public async Task<IActionResult> Search([FromBody] Search_Req req)
         {
+            AtrastiUser user = await _userManager.GetUserAsync(User);
+            
             IReadOnlyCollection<SearchDocument> searchDocuments = await _searchService.Search(req.SearchQuery);
 
             IDictionary<int, SearchDocument> grouped = new Dictionary<int, SearchDocument>();
 
             foreach (SearchDocument searchDocument in searchDocuments)
             {
-                if (!grouped.ContainsKey(searchDocument.CompanyId))
+                if (!grouped.ContainsKey(searchDocument.CompanyId) && searchDocument.CompanyId != user.Id)
                     grouped.Add(searchDocument.CompanyId, searchDocument);
             }
 
-            IList<int> companyIds = grouped.Values.Select(s => s.CompanyId).ToList();
+            IEnumerable<int> companyIds = grouped.Values.Select(s => s.CompanyId).ToList();
             IEnumerable<AtrastiUser> users = await _userRepository.FindUsersByIds(companyIds);
 
             return Ok(new Search_Res()
@@ -99,11 +101,18 @@ namespace Atrasti.API.Controllers
             }
 
             IList<int> userIds = JsonConvert.DeserializeObject<IList<int>>(userCache.Value);
-            IEnumerable<AtrastiUser> users = await _userRepository.FindUsersByIds(userIds);
-
+            IList<AtrastiUser> users = await _userRepository.FindUsersByIds(userIds);
+            IDictionary<int, AtrastiUser> usersDictionary = users.ToDictionary(x => x.Id, x => x);
+            IList<AtrastiUser> ordered = new List<AtrastiUser>();
+            
+            foreach (int companyId in userIds)
+            {
+                if (usersDictionary.TryGetValue(companyId, out AtrastiUser cachedUser)) ordered.Add(cachedUser);
+            }
+            
             return Ok(new Search_Res()
             {
-                Result = users.MapSearchEntries()
+                Result = ordered.Reverse().MapSearchEntries()
             });
         }
     }

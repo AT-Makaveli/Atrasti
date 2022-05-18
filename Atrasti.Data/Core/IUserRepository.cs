@@ -22,6 +22,6 @@ namespace Atrasti.Data.Core
 
         Task<AtrastiUser> FindUserWithUserDataByEmail(string email);
 
-        Task<IEnumerable<AtrastiUser>> FindUsersByIds(IEnumerable<int> userIds);
+        Task<IList<AtrastiUser>> FindUsersByIds(IEnumerable<int> userIds);
     }
 }

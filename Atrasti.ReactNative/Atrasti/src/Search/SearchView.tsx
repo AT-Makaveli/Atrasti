@@ -68,8 +68,6 @@ export default class SearchView extends React.Component<SearchProps, SearchState
             map((event: any) => {
                 return event;
             })
-            // if character length greater then 2
-            , filter(res => res.length > 2)
 
             // Time in milliseconds between key events
             , debounceTime(250)
@@ -79,18 +77,27 @@ export default class SearchView extends React.Component<SearchProps, SearchState
 
             // subscription for response
         ).subscribe((text: string) => {
-            search(text).then(result => {
-                this.setState({
-                    results: result
-                });
-            }).catch(ex => {
+            if (text.length > 2) {
+                search(text).then(result => {
+                    this.setState({
+                        results: result
+                    });
+                }).catch(ex => {
 
-            });
+                });
+            } else if (text.length === 0) {
+                this.setState({
+                    results: null
+                });
+            }
         });
 
+        this.fetchCache();
+    }
+
+    fetchCache() {
         getSearchHistory()
             .then(result => {
-                console.log(result);
                 this.setState({
                     cache: result
                 })
@@ -193,7 +200,7 @@ export default class SearchView extends React.Component<SearchProps, SearchState
         if(searchEntry.companyId !== null) {
             cacheSearch(searchEntry.companyId)
                 .then(() => {
-
+                    this.fetchCache();
                 })
                 .catch(error => {
 

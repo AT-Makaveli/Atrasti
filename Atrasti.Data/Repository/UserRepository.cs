@@ -1,6 +1,7 @@
 ﻿using Atrasti.Data.Core;
 using Atrasti.Data.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -111,7 +112,7 @@ namespace Atrasti.Data.Repository
                 return exists;
             }, CancellationToken.None);
         }
-        
+
         public Task<AtrastiUser> FindUserWithUserDataByRefreshToken(string refreshToken)
         {
             const string query =
@@ -120,12 +121,10 @@ namespace Atrasti.Data.Repository
                     ud.refresh_token as userData_refresh_token 
                     FROM userdata ud JOIN Users u ON u.Id = ud.user_id WHERE ud.refresh_token = @0 LIMIT 1";
             return WithConnection(
-                connection =>
-                {
-                    return connection.SelectSingleAsync<AtrastiUser>(query, refreshToken);
-                }, CancellationToken.None);
+                connection => { return connection.SelectSingleAsync<AtrastiUser>(query, refreshToken); },
+                CancellationToken.None);
         }
-        
+
         public Task<AtrastiUser> FindUserWithUserDataByEmail(string email)
         {
             const string query =
@@ -134,18 +133,22 @@ namespace Atrasti.Data.Repository
                     ud.refresh_token as userData_refresh_token 
                     FROM userdata ud JOIN Users u ON u.Id = ud.user_id WHERE u.Email = @0 LIMIT 1";
             return WithConnection(
-                connection =>
-                {
-                    return connection.SelectSingleAsync<AtrastiUser>(query, email);
-                }, CancellationToken.None);
+                connection => { return connection.SelectSingleAsync<AtrastiUser>(query, email); },
+                CancellationToken.None);
         }
 
-        public Task<IEnumerable<AtrastiUser>> FindUsersByIds(IEnumerable<int> userIds)
+        public Task<IList<AtrastiUser>> FindUsersByIds(IEnumerable<int> userIds)
         {
-            return WithConnection(connection => connection.QueryAsync<AtrastiUser>("SELECT * FROM Users WHERE Id IN @ids", new
+            return WithConnection(async connection =>
             {
-                ids = userIds
-            }));
+                IEnumerable<AtrastiUser> result = await connection.QueryAsync<AtrastiUser>(
+                    "SELECT * FROM Users WHERE Id IN @ids", new
+                    {
+                        ids = userIds
+                    });
+
+                return result.ToList() as IList<AtrastiUser>;
+            });
         }
     }
 }
