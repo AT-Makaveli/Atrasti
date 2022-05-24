@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Data;
+using Atrasti.Data.Models.Users;
 
 namespace Atrasti.Data.Models
 {
@@ -15,15 +16,15 @@ namespace Atrasti.Data.Models
         public Company CompanyModel { get; set; }
 
         public string CompanyLogo { get; set; }
-
-        public bool CompanySetup { get; set; }
-
-        public bool CompanyInfoSetup { get; set; }
         
+        public bool ProfileSetup { get; set; }
+
         public int? Referrer { get; set; }
         
         public UserData UserData { get; set; }
 
+        public UserType UserType { get; set; }
+        
         public void Serialize(IDataReader reader)
         {
             Id = reader.GetData<int>("Id");
@@ -41,8 +42,8 @@ namespace Atrasti.Data.Models
             Company = reader.GetData<string>("Company");
             FirstName = reader.GetData<string>("FirstName");
             LastName = reader.GetData<string>("LastName");
-            CompanySetup = reader.GetData<bool>("CompanySetup");
-            CompanyInfoSetup = reader.GetData<bool>("CompanyInfoSetup");
+            ProfileSetup = reader.GetData<bool>("ProfileSetup");
+            UserType = reader.GetData<UserType>("UserType");
             if (reader["CompanyLogo"] != DBNull.Value)
                 CompanyLogo = reader.GetData<string>("CompanyLogo");
 

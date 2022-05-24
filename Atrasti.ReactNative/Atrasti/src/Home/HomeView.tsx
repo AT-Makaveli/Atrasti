@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    ActivityIndicator,
     Dimensions,
     FlatList, Image, ListRenderItemInfo,
     ScrollView,
@@ -8,9 +9,14 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { AtrastiLogo } from "../utils/StaticImageUrls";
+import { Home_Res } from "../Api/Models/Responds/Home_Res";
+import { Product_Res } from "../Api/Models/Responds/Product_Res";
+import { getLogoImage, getProductImage } from "../Api/APIData";
+import { getMainPage } from "../Api/HomeAPI";
+import NavigationEvent, { fromNavigationEvent } from "../utils/NavigationEvent";
 
 interface HomeState {
-    healthCareProducts: Array<Product>
+    homePage: Home_Res | null
 }
 
 interface Product {
@@ -24,36 +30,55 @@ const windowHeight = Dimensions.get("window").height;
 
 export default class HomeView extends React.Component<any, HomeState> {
 
+    private _onHomeViewBeingShown: NavigationEvent | null = null;
+
     constructor(props: any) {
         super(props);
 
         this.state = {
-            healthCareProducts: [
-                {
-                    imageUrl: "http://192.168.3.20:5000/products/11.png",
-                    name: "Nike shoes",
-                    description: "Testing hahahaha"
-                },
-                {
-                    imageUrl: "http://192.168.3.20:5000/products/12.png",
-                    name: "Nike shoes",
-                    description: "Testing hahahaha"
-                },
-                {
-                    imageUrl: "http://192.168.3.20:5000/products/13.png",
-                    name: "Nike shoes",
-                    description: "Testing hahahaha"
-                },
-                {
-                    imageUrl: "http://192.168.3.20:5000/products/14.png",
-                    name: "Nike shoes",
-                    description: "Testing hahahaha"
-                },
-            ]
+            homePage: null
         }
     }
 
+    componentDidMount() {
+        const event = this.props.navigation.addListener('focus', this.onRequestHomePage.bind(this));
+        this._onHomeViewBeingShown = fromNavigationEvent(event);
+    }
+
+    componentWillUnmount() {
+        this._onHomeViewBeingShown?.remove();
+    }
+
+    onRequestHomePage() {
+        getMainPage()
+            .then(result => {
+                this.setState({
+                    homePage: result
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
     render() {
+        if (this.state.homePage === null) this.renderLoading();
+
+        return this.renderHomePage();
+    }
+
+    renderLoading() {
+        return (
+            <View style={{
+                backgroundColor: '#000000',
+                flex: 1,
+            }}>
+                <ActivityIndicator size={"large"}/>
+            </View>
+        )
+    }
+
+    renderHomePage() {
         return (
             <View style={Styles.mainView}>
                 <ScrollView>
@@ -82,79 +107,49 @@ export default class HomeView extends React.Component<any, HomeState> {
                             }}/>
                         </LinearGradient>
                     </View>
-                    <View style={{
-                        margin: 10
-                    }}>
-                        <Text style={{
-                            color: 'white',
-                            fontSize: 24,
-                        }}>Health care</Text>
-
-                        <FlatList data={this.state.healthCareProducts} renderItem={this.renderItem}
-                                  horizontal={true}
-                                  showsHorizontalScrollIndicator={false}
-                                  keyExtractor={this._keyExtractor}/>
-                    </View>
-                    <View style={{
-                        margin: 10
-                    }}>
-                        <Text style={{
-                            color: 'white',
-                            fontSize: 24,
-                        }}>Electronics</Text>
-
-                        <FlatList data={this.state.healthCareProducts} renderItem={this.renderItem}
-                                  horizontal={true}
-                                  showsHorizontalScrollIndicator={false}
-                                  keyExtractor={this._keyExtractor}/>
-                    </View>
-                    <View style={{
-                        margin: 10
-                    }}>
-                        <Text style={{
-                            color: 'white',
-                            fontSize: 24,
-                        }}>Entertainment</Text>
-
-                        <FlatList data={this.state.healthCareProducts} renderItem={this.renderItem}
-                                  horizontal={true}
-                                  showsHorizontalScrollIndicator={false}
-                                  keyExtractor={this._keyExtractor}/>
-                    </View>
-                    <View style={{
-                        margin: 10
-                    }}>
-                        <Text style={{
-                            color: 'white',
-                            fontSize: 24,
-                        }}>Services</Text>
-
-                        <FlatList data={this.state.healthCareProducts} renderItem={this.renderItem}
-                                  horizontal={true}
-                                  showsHorizontalScrollIndicator={false}
-                                  keyExtractor={this._keyExtractor}/>
-                    </View>
-
+                    {this.renderCategories()}
                 </ScrollView>
             </View>
         )
     }
 
-    _keyExtractor = (item: Product, index: number) => index.toString();
+    renderCategories() {
+        return this.state.homePage?.categories.map(value => {
+            return (
+                <View style={{
+                    margin: 10
+                }}>
+                    <Text style={{
+                        color: 'white',
+                        fontSize: 24,
+                    }}>{value.category}</Text>
 
-    renderItem(info: ListRenderItemInfo<Product>) {
+                    <FlatList data={value.products} renderItem={this.renderItem.bind(this)}
+                              horizontal={true}
+                              showsHorizontalScrollIndicator={false}
+                              keyExtractor={this._keyExtractor}/>
+                </View>
+            )
+        });
+    }
+
+    _keyExtractor = (item: Product_Res, index: number) => index.toString();
+
+    renderItem(info: ListRenderItemInfo<Product_Res>) {
         return (
             <TouchableOpacity activeOpacity={0.6} style={Styles.item} onPress={() => {
-                console.log('hereee!');
+                this.props.navigation.navigate('OtherProfile', {
+                    userId: info.item.userId.toString()
+                });
             }}>
-                <Image source={{uri: info.item.imageUrl}} style={{
+                <Image source={{uri: getProductImage(info.item.id)}} style={{
                     width: 150,
                     height: 100,
                     borderRadius: 20
                 }}/>
                 <Text style={{
                     color: 'white',
-                }}>{info.item.name}</Text>
+                }}>{info.item.title}</Text>
             </TouchableOpacity>
         );
     };

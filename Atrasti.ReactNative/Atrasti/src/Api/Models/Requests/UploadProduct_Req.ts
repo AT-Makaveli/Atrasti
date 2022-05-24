@@ -5,4 +5,5 @@ export interface UploadProduct_Req {
     title: string;
     description: string;
     tags: string[];
+    category: number;
 }

@@ -20,5 +20,6 @@ namespace Atrasti.API.Models.ProductModels
         public IList<string> Tags { get; set; }
         public IList<int> ProductLikes { get; set; }
         public bool IsHeartPressed { get; set; }
+        public int UserId { get; set; }
     }
 }

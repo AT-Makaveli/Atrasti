@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Atrasti.Data.Models.Users;
 
 namespace Atrasti.Data.Tables
 {
@@ -26,7 +27,7 @@ namespace Atrasti.Data.Tables
         {
             return WithConnection(async connection =>
             {
-                const string commandText = "SELECT Name FROM Users WHERE Id = @id";
+                const string commandText = "SELECT UserName FROM Users WHERE Id = @id";
                 return await connection.ExecuteScalarAsync<string>(commandText, new {id = userId});
             }, cancellationToken);
         }
@@ -138,10 +139,10 @@ namespace Atrasti.Data.Tables
             return WithConnection(async connection =>
             {
                 const string commandText =
-                    "INSERT INTO Users (UserName, PasswordHash, SecurityStamp,Email,EmailConfirmed," +
-                    "PhoneNumber,PhoneNumberConfirmed, AccessFailedCount,LockoutEnabled,LockoutEndDateUtc,TwoFactorEnabled,Company,FirstName,LastName,CompanyLogo, Referrer) " +
-                    "VALUES (@name, @pwdHash, @SecStamp,@email,@emailconfirmed,@phonenumber,@phonenumberconfirmed," +
-                    "@accesscount,@lockoutenabled,@lockoutenddate,@twofactorenabled,@company,@firstName,@lastName,@logo,@referrer)";
+                    @"INSERT INTO Users (UserName, PasswordHash, SecurityStamp,Email,EmailConfirmed,PhoneNumber,PhoneNumberConfirmed, 
+                    AccessFailedCount,LockoutEnabled,LockoutEndDateUtc,TwoFactorEnabled,Company,FirstName,LastName,CompanyLogo, Referrer, 
+                    UserType) VALUES (@name, @pwdHash, @SecStamp,@email,@emailconfirmed,@phonenumber,@phonenumberconfirmed,@accesscount,
+                    @lockoutenabled,@lockoutenddate,@twofactorenabled,@company,@firstName,@lastName,@logo,@referrer,@userType)";
                 var rowsAffected = await connection.ExecuteAsync(commandText,
                     new
                     {
@@ -162,7 +163,8 @@ namespace Atrasti.Data.Tables
                         firstName = atrastiUser.FirstName,
                         lastName = atrastiUser.LastName,
                         logo = atrastiUser.CompanyLogo,
-                        referrer = atrastiUser.Referrer
+                        referrer = atrastiUser.Referrer,
+                        @userType = atrastiUser.UserType
                     });
                 if (rowsAffected == 1)
                 {
@@ -216,7 +218,7 @@ namespace Atrasti.Data.Tables
                     @"Update Users set UserName = @userName, PasswordHash = @pwdHash, SecurityStamp = @secStamp, 
                 Email=@email, EmailConfirmed=@emailconfirmed, PhoneNumber=@phonenumber, PhoneNumberConfirmed=@phonenumberconfirmed,
                 AccessFailedCount=@accesscount, LockoutEnabled=@lockoutenabled, LockoutEndDateUtc=@lockoutenddate, TwoFactorEnabled=@twofactorenabled, FirstName = @firstName, LastName = @lastName,
-                CompanySetup = @companySetup, CompanyInfoSetup = @companyInfoSetup, CompanyLogo = @logo
+                ProfileSetup = @profileSetup, CompanyLogo = @logo, UserType = @userType
                 WHERE Id = @userId";
 
                 var rowsAffected = await connection.ExecuteAsync(commandText,
@@ -238,9 +240,9 @@ namespace Atrasti.Data.Tables
                         twofactorenabled = user.TwoFactorEnabled,
                         firstName = atrastiUser.FirstName,
                         lastName = atrastiUser.LastName,
-                        companySetup = atrastiUser.CompanySetup,
-                        companyInfoSetup = atrastiUser.CompanyInfoSetup,
-                        logo = atrastiUser.CompanyLogo
+                        profileSetup = atrastiUser.ProfileSetup,
+                        logo = atrastiUser.CompanyLogo,
+                        userType = atrastiUser.UserType
                     });
                 return rowsAffected == 1;
             }, cancellationToken);

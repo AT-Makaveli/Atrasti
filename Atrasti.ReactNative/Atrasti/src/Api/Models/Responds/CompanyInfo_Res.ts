@@ -5,6 +5,6 @@ export interface CompanyInfo_Res {
     mainProducts: string;
     mainMarkets: string;
     certificates: string;
-    yearEstablished: number;
+    yearEstablished: string;
     capacity: string;
 }

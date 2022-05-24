@@ -45,7 +45,6 @@ export function forgotPassword(email: string): Promise<ForgotPassword_Res> {
 
     return new Promise<ForgotPassword_Res>((resolve, reject) => {
         HttpServiceSingleton.post<ForgotPassword_Res>(AUTH_FORGOT_PASSWORD, req).then(response => {
-            console.log(response.data);
             resolve(response.data);
         }).catch(error => {
             reject(getErrors(error.response.data));

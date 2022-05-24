@@ -26,6 +26,8 @@ namespace Atrasti.Data.Models
 
         public bool IsHeartPressed { get; set; } = false;
 
+        public int ProductCategory { get; set; }
+        
         public void Serialize(IDataReader reader)
         {
             ProductLikes = new List<int>();

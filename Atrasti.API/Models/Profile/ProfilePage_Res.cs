@@ -9,6 +9,6 @@ namespace Atrasti.API.Models.Profile
         public User_Res User { get; set; }
         public CompanyPage_Res CompanyPage { get; set; }
         public AgentPage_Res AgentPage { get; set; }
-        public int UserType { get; set; }
+        public UserType_Mod UserType { get; set; }
     }
 }

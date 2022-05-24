@@ -7,4 +7,5 @@ export interface Product_Res {
     tags: string[];
     productLikes: number[];
     isHeartPressed: boolean;
+    userId: number;
 }

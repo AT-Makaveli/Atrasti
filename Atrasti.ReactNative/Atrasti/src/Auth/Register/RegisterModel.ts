@@ -1,8 +1,11 @@
+import { UserType_Mod } from "../../Api/Models/DbModels/UserType_Mod";
+
 export default class RegisterModel {
     private static _email: string;
     private static _firstName: string;
     private static _lastName: string;
     private static _company: string;
+    private static _userType: UserType_Mod;
     private static _password: string;
 
     static get email(): string {
@@ -43,5 +46,13 @@ export default class RegisterModel {
 
     static set password(value: string) {
         this._password = value;
+    }
+
+    static get userType(): UserType_Mod {
+        return this._userType;
+    }
+
+    static set userType(value: UserType_Mod) {
+        this._userType = value;
     }
 }

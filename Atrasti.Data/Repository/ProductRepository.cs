@@ -21,16 +21,14 @@ namespace Atrasti.Data.Repository
         {
             return WithConnection(async connection =>
             {
-                uint id = await connection.ExecuteScalarAsync<uint>("INSERT INTO " +
-                                                                    "`products`(`CompanyId`, `Title`, `Description`, `Tags`, `PhoneticTags`) " +
-                                                                    "VALUES (@companyId, @title, @desc, @tags, @phoneticTags);\n" +
-                                                                    "SELECT LAST_INSERT_ID();", new
+                uint id = await connection.ExecuteScalarAsync<uint>("INSERT INTO `products`(`CompanyId`, `Title`, `Description`, `Tags`, `PhoneticTags`, `ProductCategory`) VALUES (@companyId, @title, @desc, @tags, @phoneticTags, @productCategory);SELECT LAST_INSERT_ID();", new
                 {
                     companyId = product.CompanyId,
                     title = product.Title,
                     desc = product.Description,
                     tags = JsonConvert.SerializeObject(product.Tags),
-                    phoneticTags = string.Join(' ', product.PhoneticTags)
+                    phoneticTags = string.Join(' ', product.PhoneticTags),
+                    productCategory = product.ProductCategory
                 });
                 product.Id = id;
             }, CancellationToken.None);

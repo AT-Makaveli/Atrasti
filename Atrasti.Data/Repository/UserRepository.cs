@@ -36,8 +36,8 @@ namespace Atrasti.Data.Repository
             return await WithConnection(async connection =>
             {
                 string commandQuery = string.Format(
-                    "SELECT u.*, c.*, ci.*, userData.user_id as userData_user_id, userData.referrals as userData_referrals FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId JOIN userdata userData on userData.user_id = u.Id WHERE Id IN ({0}) AND u.CompanySetup = 1 AND u.CompanyInfoSetup = 1;",
-                    idBuilder.ToString());
+                    "SELECT u.*, c.*, ci.*, userData.user_id as userData_user_id, userData.referrals as userData_referrals FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId JOIN userdata userData on userData.user_id = u.Id WHERE Id IN ({0}) AND u.ProfileSetup = 1;",
+                    idBuilder);
                 var command = connection.CreateCommandWithIntArray(commandQuery, ids);
                 var users = await command.SelectMultipleAsync<AtrastiUser>();
 
@@ -50,7 +50,7 @@ namespace Atrasti.Data.Repository
             return WithConnection(async connection =>
             {
                 var users = await connection.SelectMultipleAsync<AtrastiUser>(
-                    "SELECT u.*, c.*, ci.* FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId WHERE Id IN (SELECT CompanyId FROM products GROUP BY CompanyId ORDER BY COUNT(*) DESC) AND u.CompanySetup = 1 AND u.CompanyInfoSetup = 1;");
+                    "SELECT u.*, c.*, ci.* FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId WHERE Id IN (SELECT CompanyId FROM products GROUP BY CompanyId ORDER BY COUNT(*) DESC) AND u.ProfileSetup = 1;");
 
                 return (ICollection<AtrastiUser>) users;
             }, CancellationToken.None);
@@ -62,7 +62,7 @@ namespace Atrasti.Data.Repository
                 connection =>
                 {
                     return connection.SelectSingleAsync<AtrastiUser>(
-                        "SELECT u.*, c.*, ci.*, userData.user_id as userData_user_id, userData.referrals as userData_referrals, userData.fcm_token as userData_fcm_token FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId JOIN userdata userData on userData.user_id = u.Id WHERE Id = @0 AND u.CompanySetup = 1 AND u.CompanyInfoSetup = 1;",
+                        "SELECT u.*, c.*, ci.*, userData.user_id as userData_user_id, userData.referrals as userData_referrals, userData.fcm_token as userData_fcm_token FROM Users u JOIN companies c ON u.Id = c.RefId JOIN company_infos ci ON u.Id = ci.RefId JOIN userdata userData on userData.user_id = u.Id WHERE Id = @0 AND u.ProfileSetup = 1;",
                         id);
                 }, CancellationToken.None);
         }
@@ -96,7 +96,7 @@ namespace Atrasti.Data.Repository
             return await WithConnection(
                 async connection =>
                 {
-                    string commandQuery = $"SELECT * FROM Users WHERE{idBuilder} AND CompanySetup = 1";
+                    string commandQuery = $"SELECT * FROM Users WHERE{idBuilder} AND ProfileSetup = 1";
                     var command = connection.CreateCommandWithStringArray(commandQuery, query, true);
                     var users = await command.SelectMultipleAsync<AtrastiUser>();
                     return users;

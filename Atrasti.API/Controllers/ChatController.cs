@@ -36,7 +36,7 @@ namespace Atrasti.API.Controllers
         {
             AtrastiUser user = await _userManager.GetUserAsync(User);
 
-            if (!user.CompanyInfoSetup && !user.CompanySetup)
+            if (!user.ProfileSetup)
             {
                 return BadRequest(new InvalidChatModelError(InvalidChatModelError.USER_PROFILE_NOT_SET,
                     "User profile is not set."));

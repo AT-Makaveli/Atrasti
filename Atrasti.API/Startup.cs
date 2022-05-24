@@ -34,7 +34,7 @@ namespace Atrasti.API
 
             services.AddIdentityCore<AtrastiUser>(options =>
             {
-                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = false;
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
@@ -42,7 +42,7 @@ namespace Atrasti.API
                 options.Password.RequiredLength = 8;
             });
 
-            services.AddIdentity<AtrastiUser, AtrastiRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<AtrastiUser, AtrastiRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultTokenProviders()
                 .InitializeDapperStores();
             services.ConfigureSearchModule();
@@ -75,7 +75,10 @@ namespace Atrasti.API
 
             app.UseStaticFiles();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

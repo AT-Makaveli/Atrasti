@@ -24,11 +24,12 @@ namespace Atrasti.Data.Repository
             {
                 using IDbTransaction transaction = await connection.BeginTransactionAsync(CancellationToken.None);
                 await connection.ExecuteAsync(
-                    "INSERT INTO `companies`(`RefId`, `Address`, `City`, `Country`, `Website`, `CompanyDesc`) VALUES (@refId, @address, @city, @country, @website, @desc);",
+                    "INSERT INTO `companies`(`RefId`, `Address`, `City`, `State`, `Country`, `Website`, `CompanyDesc`) VALUES (@refId, @address, @city, @state, @country, @website, @desc);",
                     new
                     {
                         refId = company.RefId,
                         address = company.Address,
+                        state = company.State,
                         city = company.City,
                         country = company.City,
                         website = company.Website,

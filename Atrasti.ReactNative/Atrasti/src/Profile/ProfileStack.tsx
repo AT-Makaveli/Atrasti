@@ -81,7 +81,7 @@ export default class ProfileStack extends React.Component<ProfileProps, any> {
                             fontSize: 16,
                             fontWeight: "bold"
                         }}>Manage site</Text>
-                    }
+                    },
                 }}/>
             </Stack.Navigator>
         );

@@ -13,6 +13,7 @@ export interface {{ class.Name }} {
     filePath =  "../Atrasti.ReactNative/Atrasti/src/Api/Models/Requests/" | String.Append class.BareName | String.Append ".ts"
     Save output filePath
     end }}
+    
 {{- for class in data.Classes | Symbols.WhereNameEndsWith "_Res"
     capture output -}}
 {{- for type in (class | Type.AllReferencedTypes)}}
@@ -22,9 +23,22 @@ export interface {{ class.Name }} {
 export interface {{ class.Name }} {
     {{- for property in class.Properties | Symbols.ThatArePublic }}
     {{ property.Name | String.ToCamelCase }}: {{ property.Type | Type.ToTypeScriptType }};
-        {{- end }}
+    {{- end }}
 }
 {{- end
     filePath = "../Atrasti.ReactNative/Atrasti/src/Api/Models/Responds/" | String.Append class.BareName | String.Append ".ts"
+    Save output filePath
+    end }}
+    
+{{- for enum in data.Enums | Symbols.WhereNameEndsWith "_Mod"
+    capture output -}}
+
+export enum {{ enum.Name }} {
+    {{- for enumValue in enum.Values }}
+    {{ enumValue.Name | Custom.ToSnakeCase }} = {{ enumValue.Value }},
+    {{- end }}
+}
+{{- end
+    filePath = "../Atrasti.ReactNative/Atrasti/src/Api/Models/DbModels/" | String.Append enum.BareName | String.Append ".ts"
     Save output filePath
     end }}

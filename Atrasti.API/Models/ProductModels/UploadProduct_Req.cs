@@ -9,5 +9,7 @@ namespace Atrasti.API.Models.ProductModels
         public string Description { get; set; }
         
         public string[] Tags { get; set; }
+        
+        public int Category { get; set; }
     }
 }

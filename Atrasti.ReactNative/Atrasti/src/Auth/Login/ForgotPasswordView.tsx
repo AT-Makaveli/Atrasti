@@ -73,7 +73,6 @@ export default class ForgotPasswordView extends React.Component<ForgotPasswordPr
         Keyboard.dismiss();
         forgotPassword(this.state.email)
             .then(result => {
-                console.log(result);
                 if (result.status) {
                     this.setState({
                         success: result.status,

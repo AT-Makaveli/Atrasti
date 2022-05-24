@@ -124,7 +124,7 @@ export default class CompanyView extends React.Component<CompanyProps, CompanySt
                                     bottom: -(profileImageWidth / 3)
                                 }}/>
                         ) : (
-                            <Image
+                            <View
                                 style={{
                                     width: profileImageWidth,
                                     height: profileImageHeight,

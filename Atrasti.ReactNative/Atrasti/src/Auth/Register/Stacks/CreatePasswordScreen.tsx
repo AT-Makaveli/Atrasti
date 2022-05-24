@@ -177,7 +177,7 @@ export default class PasswordScreen extends React.Component<PasswordRegisterProp
             return;
         }
 
-        register(RegisterModel.email, RegisterModel.firstName, RegisterModel.lastName, RegisterModel.company, this.state.password)
+        register(RegisterModel.email, RegisterModel.firstName, RegisterModel.lastName, RegisterModel.company, this.state.password, RegisterModel.userType)
             .then(result => {
                 this.props.navigation.navigate(  'Login',
                     {},

@@ -37,6 +37,7 @@ namespace Atrasti.Data
             builder.Services.AddScoped<IShorteningRepository, ShorteningRepository>();
             builder.Services.AddScoped<IAgentRepository, AgentRepository>();
             builder.Services.AddScoped<IUserCacheRepository, UserCacheRepository>();
+            builder.Services.AddScoped<IBaseCategoriesRepository, BaseCategoriesRepository>();
             AddStores(builder.Services, builder.UserType, builder.RoleType);
             return builder;
         }

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    ActivityIndicator,
     Image,
     ScrollView,
     StyleSheet,
@@ -12,7 +13,10 @@ import * as FAIcon from "react-native-vector-icons/FontAwesome";
 import { NavigationRoute, NavigationScreenProp } from "react-navigation";
 import ImagePicker, { Image as CroppedImage } from 'react-native-image-crop-picker';
 import AtrastiButton from "../../../Shared/AtrastiButton";
-import { uploadProduct } from "../../../Api/ProductAPI";
+import { getUserCategories, uploadProduct } from "../../../Api/ProductAPI";
+import { ProductCategories_Res } from "../../../Api/Models/Responds/ProductCategories_Res";
+import { BaseCategory_Res } from "../../../Api/Models/Responds/BaseCategory_Res";
+import CategoryPicker from "../../../Shared/CategoryPicker";
 
 export interface UploadProductViewProps {
     navigation: NavigationScreenProp<any, any>;
@@ -24,7 +28,10 @@ export interface UploadProductPageState {
     productTitle: string,
     productDescription: string,
     tags: string[],
-    tagError: TagError[]
+    tagError: TagError[],
+    loading: boolean,
+    categories: BaseCategory_Res[],
+    selectedCategory: number
 }
 
 interface TagError {
@@ -42,7 +49,10 @@ export default class UploadProductView extends React.Component<UploadProductView
             productTitle: '',
             productDescription: '',
             tags: [''],
-            tagError: []
+            tagError: [],
+            loading: true,
+            categories: [],
+            selectedCategory: -1
         }
     }
 
@@ -56,6 +66,18 @@ export default class UploadProductView extends React.Component<UploadProductView
                                 }}/>
             )
         });
+
+        getUserCategories()
+            .then(result => {
+                this.setState({
+                    categories: result.categories,
+                    loading: false
+                })
+            })
+            .catch(error => {
+                console.log('UploadProductView');
+                console.log(error);
+            });
     }
 
     renderTags(): JSX.Element[] {
@@ -107,6 +129,23 @@ export default class UploadProductView extends React.Component<UploadProductView
     }
 
     render() {
+        if(this.state.loading) return this.renderLoading();
+
+        return this.renderUploadProduct();
+    }
+
+    renderLoading() {
+        return (
+            <View style={{
+                backgroundColor: '#000000',
+                flex: 1,
+            }}>
+                <ActivityIndicator size={"large"}/>
+            </View>
+        )
+    }
+
+    renderUploadProduct() {
         return (
             <ScrollView style={{
                 backgroundColor: '#000000',
@@ -157,6 +196,12 @@ export default class UploadProductView extends React.Component<UploadProductView
                 />
                 <Text style={Styles.label}>Tags</Text>
                 {this.renderTags()}
+                <Text style={Styles.label}>Category</Text>
+                <CategoryPicker data={this.state.categories} selectedValue={this.state.selectedCategory}  onValueChange={(value) => {
+                    this.setState({
+                        selectedCategory: value
+                    })
+                }} />
                 <AtrastiButton title={'Upload product'} onClick={() => {
                     this.onUploadProduct();
                 }} style={Styles.uploadProductButton} textStyle={Styles.buttonText}/>
@@ -181,13 +226,17 @@ export default class UploadProductView extends React.Component<UploadProductView
     onUploadProduct() {
         let valid = this.validateTags();
 
-        if (this.state.image?.data === null) {
+        if(this.state.image?.data === null) {
             valid = false;
         }
 
-        if (valid) {
+        if (this.state.selectedCategory === -1) {
+            valid = false;
+        }
+
+        if(valid) {
             const state = this.state;
-            uploadProduct(state.image?.data as string, state.productTitle, state.productDescription, state.tags)
+            uploadProduct(state.image?.data as string, state.productTitle, state.productDescription, state.tags, this.state.selectedCategory)
                 .then(result => {
 
                 })
@@ -210,7 +259,7 @@ export default class UploadProductView extends React.Component<UploadProductView
             }
         }
 
-        if (tagErrors.length > 0) {
+        if(tagErrors.length > 0) {
             this.setState({
                 tagError: tagErrors
             });

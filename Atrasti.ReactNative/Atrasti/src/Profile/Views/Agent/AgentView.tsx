@@ -39,7 +39,6 @@ export default class AgentView extends React.Component<AgentProps, AgentState> {
     }
 
     render() {
-        console.log(this.props.user);
         return (
             <View style={Styles.mainView}>
                 <ScrollView style={{
@@ -65,7 +64,7 @@ export default class AgentView extends React.Component<AgentProps, AgentState> {
                                     bottom: -(profileImageWidth / 3)
                                 }}/>
                         ) : (
-                            <Image
+                            <View
                                 style={{
                                     width: profileImageWidth,
                                     height: profileImageHeight,

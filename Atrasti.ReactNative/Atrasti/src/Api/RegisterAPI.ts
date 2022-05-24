@@ -20,13 +20,14 @@ export const PASSWORD_INVALID = "PASSWORD_INVALID";
 
 export const UNKNOWN_ERROR = "UNKNOWN_ERROR";
 
-export function register(email: string, firstName: string, lastName: string, company: string, password: string): Promise<any> {
+export function register(email: string, firstName: string, lastName: string, company: string, password: string, userType: number): Promise<any> {
     const req = {
         email: email,
         firstName: firstName,
         lastName: lastName,
         company: company,
-        password: password
+        password: password,
+        userType: userType
     } as Register_Req;
 
     return new Promise<null>((resolve, reject) => {

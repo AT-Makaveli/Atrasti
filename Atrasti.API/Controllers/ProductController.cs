@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,6 +8,7 @@ using Atrasti.API.Helpers;
 using Atrasti.API.Models.ProductModels;
 using Atrasti.Data.Core;
 using Atrasti.Data.Models;
+using Atrasti.Data.Models.Users;
 using Atrasti.Search;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -18,31 +20,51 @@ namespace Atrasti.API.Controllers
     [Route("[controller]/[action]")]
     public class ProductController : Controller
     {
+        private readonly IBaseCategoriesRepository _baseCategoriesRepository;
         private readonly IProductRepository _productRepository;
         private readonly SearchService _searchService;
         private readonly UserManager<AtrastiUser> _userManager;
 
         public ProductController(IProductRepository productRepository, UserManager<AtrastiUser> userManager,
-            SearchService searchService)
+            SearchService searchService, IBaseCategoriesRepository baseCategoriesRepository)
         {
             _productRepository = productRepository;
             _userManager = userManager;
             _searchService = searchService;
+            _baseCategoriesRepository = baseCategoriesRepository;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> UserCategories()
+        {
+            AtrastiUser user = await _userManager.GetUserAsync(User);
+            if (user.UserType == UserType.Company)
+            {
+                IList<BaseCategory> categories = await _baseCategoriesRepository.FindUserCategories(user.Id);
+
+                return Ok(new ProductCategories_Res()
+                {
+                    Categories = categories.MapCategoriesRes()
+                });
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> UploadProduct([FromBody] UploadProduct_Req req)
         {
-            if (req.Image.Length == 0)
+            if (string.IsNullOrEmpty(req.Image))
                 return BadRequest(new InvalidProductModelError(InvalidProductModelError.PRODUCT_IMAGE_NOT_SET,
                     "Must contain image."));
 
-            if (req.Title.Length == 0)
+            if (string.IsNullOrEmpty(req.Title))
                 return BadRequest(new InvalidProductModelError(InvalidProductModelError.PRODUCT_TITLE_NOT_SET,
                     "Must contain title."));
 
-            if (req.Description.Length == 0)
+            if (string.IsNullOrEmpty(req.Description))
                 return BadRequest(new InvalidProductModelError(InvalidProductModelError.PRODUCT_DESC_NOT_SET,
                     "Must contain description."));
 
@@ -57,7 +79,8 @@ namespace Atrasti.API.Controllers
                 Title = req.Title,
                 Description = req.Description,
                 Tags = req.Tags.ToList(),
-                PhoneticTags = req.Tags.ToList()
+                PhoneticTags = req.Tags.ToList(),
+                ProductCategory = req.Category
             };
 
             await _productRepository.CreateProductAsync(product);

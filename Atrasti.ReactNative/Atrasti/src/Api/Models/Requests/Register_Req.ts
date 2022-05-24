@@ -6,4 +6,5 @@ export interface Register_Req {
     lastName: string;
     company: string;
     password: string;
+    userType: number;
 }

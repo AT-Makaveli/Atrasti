@@ -1,14 +1,14 @@
-import { fromNavigationEvent } from "../utils/NavigationEvent";
 import { getProfilePage } from "../Api/ProfileAPI";
 import CompanyView from "./Views/Company/CompanyView";
 import AgentView from "./Views/Agent/AgentView";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import NotSetupView from "./Views/NotSetupView";
 import React from "react";
-import { NavigationParams, NavigationRoute, NavigationScreenProp } from "react-navigation";
+import { NavigationRoute, NavigationScreenProp } from "react-navigation";
 import { CompanyPage_Res } from "../Api/Models/Responds/CompanyPage_Res";
 import { User_Res } from "../Api/Models/Responds/User_Res";
 import { AgentPage_Res } from "../Api/Models/Responds/AgentPage_Res";
+import { UserType_Mod } from "../Api/Models/DbModels/UserType_Mod";
 
 interface ProfileProps {
     navigation: NavigationScreenProp<any, any>;
@@ -22,7 +22,7 @@ interface ProfileState {
     isProfileOwner: boolean,
     agent: AgentPage_Res | null,
     setup: boolean,
-    userType: number,
+    userType: UserType_Mod,
     loading: boolean
 }
 
@@ -55,21 +55,23 @@ export default class ProfileView extends React.Component<ProfileProps, ProfileSt
     componentDidMount() {
         getProfilePage(this._userId).then(result => {
             if(result.setup) {
-                if(result.companyPage !== null) {
+                if(result.userType === UserType_Mod.COMPANY) {
                     this.setState({
                         user: result.user,
                         company: result.companyPage,
                         isProfileOwner: result.isProfileOwner,
                         userType: result.userType,
-                        loading: false
+                        loading: false,
+                        setup: true
                     });
-                } else if(result.agentPage !== null) {
+                } else if(result.userType === UserType_Mod.AGENT) {
                     this.setState({
                         user: result.user,
                         agent: result.agentPage,
                         isProfileOwner: result.isProfileOwner,
                         userType: result.userType,
-                        loading: false
+                        loading: false,
+                        setup: true
                     });
                 }
             } else {
@@ -89,17 +91,17 @@ export default class ProfileView extends React.Component<ProfileProps, ProfileSt
     render() {
         let view;
         if(this.state.setup) {
-            if(this.state.company !== null) {
-                view = <CompanyView navigation={this.props.navigation} products={this.state.company.products}
-                                    user={this.state.user} isProfileOwner={this.state.isProfileOwner}/>
-            } else if(this.state.agent !== null) {
-                view = <AgentView agentPage={this.state.agent} navigation={this.props.navigation}
-                                  isProfileOwner={this.state.isProfileOwner} user={this.state.user}/>
+            if(this.state.userType === UserType_Mod.COMPANY && this.state.company !== null) {
+                return (<CompanyView navigation={this.props.navigation} products={(this.state.company as CompanyPage_Res).products}
+                                     user={this.state.user} isProfileOwner={this.state.isProfileOwner}/>)
+            } else if(this.state.userType === UserType_Mod.AGENT) {
+                return (<AgentView agentPage={this.state.agent as AgentPage_Res} navigation={this.props.navigation}
+                                   isProfileOwner={this.state.isProfileOwner} user={this.state.user}/>)
             }
         } else if(this.state.loading) {
             view = <ActivityIndicator size={"large"}/>
         } else {
-            view = <NotSetupView userType={this.state.userType} navigation={this.props.navigation}/>
+            return (<NotSetupView userType={this.state.userType} navigation={this.props.navigation}/>)
         }
 
         return (

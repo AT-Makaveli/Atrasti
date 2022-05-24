@@ -10,6 +10,7 @@ using Atrasti.API.Services.Jwt;
 using Atrasti.API.Services.Refresh;
 using Atrasti.Data.Core;
 using Atrasti.Data.Models;
+using Atrasti.Data.Models.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -121,6 +122,7 @@ namespace Atrasti.API.Controllers
                 UserName = req.Email,
                 FirstName = req.FirstName[0].ToString().ToUpper() + req.FirstName.Substring(1),
                 LastName = req.LastName[0].ToString().ToUpper() + req.LastName.Substring(1),
+                UserType = (UserType) req.UserType
             };
 
             bool validPassword =

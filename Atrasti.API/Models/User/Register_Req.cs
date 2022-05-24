@@ -7,5 +7,6 @@ namespace Atrasti.API.Models.User
         public string LastName { get; set; }
         public string Company { get; set; }
         public string Password { get; set; }
+        public int UserType { get; set; }
     }
 }

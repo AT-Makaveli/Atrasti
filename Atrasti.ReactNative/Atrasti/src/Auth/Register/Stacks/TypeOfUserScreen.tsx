@@ -1,10 +1,10 @@
 import * as React from "react";
 import { NavigationScreenProp } from "react-navigation";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import AtrastiButton from "../../../Shared/AtrastiButton";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { COMPANY_EMPTY, COMPANY_IN_USE, validateCompany } from "../../../Api/RegisterAPI";
 import RegisterModel from "../RegisterModel";
+import { UserType_Mod } from "../../../Api/Models/DbModels/UserType_Mod";
 
 export interface CompanyRegisterProps {
     navigation: NavigationScreenProp<any, any>
@@ -51,6 +51,7 @@ export default class TypeOfUserScreen extends React.Component<CompanyRegisterPro
                             Are you an agent looking for new missions?
                         </Text>
                         <AtrastiButton title={'Agent'} onClick={async (event) => {
+                            RegisterModel.userType = UserType_Mod.AGENT;
                             this.props.navigation.navigate('CreatePasswordScreen');
                         }} style={Styles.continueButton} textStyle={Styles.continueButtonText}/>
                         <Text style={{
@@ -69,6 +70,7 @@ export default class TypeOfUserScreen extends React.Component<CompanyRegisterPro
                             Are you a buying/selling company?
                         </Text>
                         <AtrastiButton title={'Company'} onClick={async (event) => {
+                            RegisterModel.userType = UserType_Mod.COMPANY;
                             this.props.navigation.navigate('CompanyScreen');
                         }} style={Styles.continueButton} textStyle={Styles.continueButtonText}/>
                     </View>

@@ -3,6 +3,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import { NotExistProfile } from "../../utils/StaticImageUrls";
 import AtrastiButton from "../../Shared/AtrastiButton";
 import { NavigationScreenProp } from "react-navigation";
+import { UserType_Mod } from "../../Api/Models/DbModels/UserType_Mod";
 
 export interface NotSetupProps {
     userType: number,
@@ -53,10 +54,9 @@ export default class NotSetupView extends React.Component<NotSetupProps> {
                                 setup.
                             </Text>
                             <AtrastiButton title={'Setup now'} onClick={(event) => {
-                                if (this.props.userType === 0) {
+                                if (this.props.userType === UserType_Mod.AGENT) {
                                     this.props.navigation.navigate('ManageAgentView');
-                                } else if (this.props.userType === 1) {
-                                    console.log()
+                                } else if (this.props.userType === UserType_Mod.COMPANY) {
                                     this.props.navigation.navigate('ManageProfileView');
                                 }
                             }} style={Styles.setupButton} textStyle={Styles.setupButtonText}/>

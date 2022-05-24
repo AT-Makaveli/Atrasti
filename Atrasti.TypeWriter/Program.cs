@@ -39,7 +39,7 @@ class Program
 
             // 6) Add custom functions
             var ntypewriterConfig = new Configuration();
-            //ntypewriterConfig.AddCustomFunctions(typeof(NTEConfig));
+            ntypewriterConfig.AddCustomFunctions(typeof(CustomConfiguration));
 
             // 7) Render
             var result = await NTypeWriter.Render(template, codeModel, ntypewriterConfig);

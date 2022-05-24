@@ -1,4 +1,6 @@
-export const URL = "http://192.168.4.29:5000/";
+export const URL = "http://94.46.243.183:5000/";
+
+export const MAIN_PAGE_GET = URL + "MainPage/Get";
 
 export const AUTH_API_LOGIN = URL + "Auth/Login";
 export const AUTH_FORGOT_PASSWORD = URL + "Auth/ForgotPassword";
@@ -11,8 +13,12 @@ export const PROFILE_PROFILE_PAGE = URL + "Profile/ProfilePage";
 export const PROFILE_LIKE_INTERACT = URL + "Profile/LikeInteract";
 export const PROFILE_MANAGE_PROFILE_PAGE = URL + "Profile/ManageProfilePage";
 export const PROFILE_MANAGE_AGENT_PAGE = URL + "Profile/ManageAgentPage";
+export const PROFILE_MANAGE_COMPANY_PAGE = URL + "Profile/ManageCompanyPage";
 
 export const PRODUCT_UPLOAD_PRODUCT = URL + "Product/UploadProduct";
+export const PRODUCT_USER_CATEGORIES = URL + "Product/UserCategories";
+
+export const CATEGORY_ALLBASECATEGORIES = URL + "Category/AllBaseCategories";
 
 export const SEARCH_SEARCH = URL + "Search/Search";
 export const SEARCH_CACHE_SEARCH = URL + "Search/CacheSearch";

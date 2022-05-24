@@ -29,7 +29,7 @@ export interface ManageAgentViewProps {
 export interface ManageAgentPageState extends AgentPage_Res {
     loading: boolean;
     edited: boolean;
-    image: CroppedImage | null
+    image: CroppedImage | null,
 }
 
 export default class ManageAgentView extends React.Component<ManageAgentViewProps, ManageAgentPageState> {
@@ -87,7 +87,6 @@ export default class ManageAgentView extends React.Component<ManageAgentViewProp
     }
 
     render() {
-        console.log(this.state.image?.path);
         return (
             <View style={{
                 backgroundColor: '#000000',

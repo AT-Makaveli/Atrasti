@@ -14,7 +14,7 @@ namespace Atrasti.API.Helpers
                 Certificates = companyInfo.Certificates,
                 MainMarkets = companyInfo.MainMarkets,
                 MainProducts = companyInfo.MainProducts,
-                YearEstablished = companyInfo.YearEstablished
+                YearEstablished = companyInfo.YearEstablished.ToString()
             };
         }
     }
