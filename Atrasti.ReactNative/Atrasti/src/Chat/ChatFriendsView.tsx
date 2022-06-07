@@ -66,7 +66,7 @@ export default class ChatFriendsView extends React.Component<ChatFriendsProps, C
                 chatUser.item.click();
             }}>
                 <Image source={{
-                    uri: getLogoImage(chatUser.item.chatFriend.friendId)
+                    uri: getLogoImage(chatUser.item.chatFriend.friendLogo)
                 }} style={{
                     width: 50,
                     height: 50,

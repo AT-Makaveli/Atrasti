@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using Atrasti.Data.Core;
 using Atrasti.Data.Models;
@@ -32,14 +33,21 @@ namespace Atrasti.Data.Repository
                 "SELECT b.* FROM BaseCategories b JOIN Categories c on b.Id = c.BaseCategoryId WHERE c.ProfileId = @0;",
                 companyId));
         }
+        
+        public Task<BaseCategory> FindBaseCategoryById(int baseCategoryId)
+        {
+            return WithConnection(connection => connection.SelectSingleAsync<BaseCategory>(
+                "SELECT * FROM BaseCategories WHERE Id = @0;",
+                baseCategoryId));
+        }
 
-        public Task<int> RemoveUserCategories(int companyId, IList<int> toRemove)
+        public Task<int> RemoveUserCategories(int companyId, IEnumerable<int> toRemove)
         {
             return WithConnection(connection => connection.ExecuteAsync(
-                "DELETE FROM Categories WHERE ProfileId = @profileId AND BaseCategoryId IN(@categoryIds)", new
+                "DELETE FROM Categories WHERE ProfileId = @profileId AND BaseCategoryId IN @categoryIds", new
                 {
                     profileId = companyId,
-                    categoryIds = toRemove
+                    categoryIds = toRemove.ToArray()
                 }));
         }
 
@@ -58,6 +66,17 @@ namespace Atrasti.Data.Repository
                 await transaction.CommitAsync();
                 return rowsAffected;
             });
+        }
+        
+        static SqlMapper.ICustomQueryParameter GetIntListTableValuedParameter(IEnumerable<int> ids)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("Id", typeof(int));
+            foreach (var id in ids)
+            {
+                dt.Rows.Add(id);
+            }
+            return dt.AsTableValuedParameter(" [dbo].[IntListTableType]");
         }
     }
 }

@@ -50,6 +50,7 @@ export function uploadProduct(image: string, title: string, description: string,
         HttpServiceSingleton.post(PRODUCT_UPLOAD_PRODUCT, req).then(response => {
             resolve(response.data);
         }).catch(error => {
+            console.log(error);
             reject(getErrors(error.response.data));
         })
     });

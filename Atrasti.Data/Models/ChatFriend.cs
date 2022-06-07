@@ -10,11 +10,14 @@ namespace Atrasti.Data.Models
         
         public string FriendCompany { get; private set; }
         
+        public string FriendLogo { get; private set; }
+        
         public void Serialize(IDataReader reader)
         {
             ChatId = reader.GetData<int>("ChatId");
             FriendId = reader.GetData<int>("FriendId");
             FriendCompany = reader.GetData<string>("FriendCompany");
+            FriendLogo = reader.GetData<string>("FriendLogo");
         }
     }
 }

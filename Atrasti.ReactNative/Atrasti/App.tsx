@@ -6,7 +6,7 @@ import { DeviceEventEmitter, EmitterSubscription } from "react-native";
 import AuthRequestEvent from "./src/utils/Events/Auth/AuthRequestEvent";
 import AuthSignOutEvent from "./src/utils/Events/Auth/AuthSignOutEvent";
 import { setupCloudMethods, unSubscribeCloudMethods } from "./src/FirebaseCloud/FirebaseCloudMethods";
-import { getCountries } from "./src/Api/CountryAPI";
+import { loadCountries } from "./src/Api/CountryAPI";
 
 const MyTheme = {
     ...DefaultTheme,
@@ -37,7 +37,7 @@ class App extends React.Component<any, AppState> {
         this._onAuthRequest = DeviceEventEmitter.addListener(AuthRequestEvent.EVENT_TYPE, this.onAuthEvent.bind(this));
         this._onAuthSignOutRequest = DeviceEventEmitter.addListener(AuthSignOutEvent.EVENT_TYPE, this.onAuthSignOutEvent.bind(this));
         setupCloudMethods();
-        await getCountries();
+        await loadCountries();
     }
 
     componentWillUnmount() {

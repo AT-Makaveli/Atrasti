@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Atrasti.API.Services.Firebase;
 using Atrasti.API.Helpers;
@@ -43,11 +44,30 @@ namespace Atrasti.API.Controllers
             }
 
             IList<ChatFriend> friends = await _chatRepository.FetchFriendsAsync(user.Id);
+            //IList<ChatFriend> friendRequests = await _chatRepository.FetchFriendRequestsAsync(user.Id);
 
             return Ok(new ChatFriends_Res()
             {
                 Friends = friends.MapChatFriends()
             });
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> SendFriendRequest([FromBody] AddFriend_Req req)
+        {
+            AtrastiUser user = await _userManager.GetUserAsync(User);
+            IList<ChatFriend> friends = await _chatRepository.FetchFriendsAsync(user.Id);
+            bool alreadyFriends = friends.Any(x => x.FriendId == req.UserId);
+            
+            if (!alreadyFriends)
+            {
+                await _chatRepository.AddFriend(user.Id, req.UserId);
+            }
+            
+            ChatFriend friend = await _chatRepository.FetchFriendAsync(user.Id, req.UserId);
+            
+            return Ok(friend.MapChatFriend());
         }
 
         [Authorize]
@@ -96,15 +116,17 @@ namespace Atrasti.API.Controllers
             {
                 return BadRequest();
             }
-
             message.Id = chatId;
             var res = message.MapChatMessage();
             res.FromMe = true;
             res.Author = user.Company;
-
-            string data = await _firebaseService.SendMessage(new FirebaseChatMessage(res, toUser.UserData.FcmToken));
-            Console.WriteLine(data);
             
+            if (toUser.UserData.FcmToken != null)
+            {
+                string data =
+                    await _firebaseService.SendMessage(new FirebaseChatMessage(res, toUser.UserData.FcmToken));
+            }
+
             return Ok(res);
         }
     }

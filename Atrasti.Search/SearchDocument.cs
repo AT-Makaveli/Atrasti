@@ -25,5 +25,7 @@ namespace Atrasti.Search
         public string MainMarkets { get; set; }
         
         public string Certificates { get; set; }
+        
+        public string Category { get; set; }
     }
 }

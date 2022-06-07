@@ -9,6 +9,7 @@ import UploadProductView from "./Views/Company/UploadProductView";
 import ManageAgentView from "./Views/Agent/ManageAgentView";
 import AgentBottomDrawer from "./Views/Agent/AgentBottomDrawer";
 import ProfileView from "./ProfileView";
+import ChatView from "../Chat/ChatView";
 
 const Stack = createStackNavigator();
 
@@ -83,6 +84,19 @@ export default class ProfileStack extends React.Component<ProfileProps, any> {
                         }}>Manage site</Text>
                     },
                 }}/>
+                <Stack.Screen name="ProfileUserChat" component={ChatView} options={{
+                    headerShown: true,
+                    headerStyle: {
+                        backgroundColor: '#000000',
+                    },
+                    headerTitle: (props: HeaderTitleProps): any => {
+                        return <Text style={{
+                            color: '#FFFFFF',
+                            fontSize: 16,
+                            fontWeight: "bold"
+                        }}>Chat user</Text>
+                    }
+                }} />
             </Stack.Navigator>
         );
     }

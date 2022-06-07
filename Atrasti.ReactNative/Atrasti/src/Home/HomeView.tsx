@@ -141,7 +141,7 @@ export default class HomeView extends React.Component<any, HomeState> {
                 this.props.navigation.navigate('OtherProfile', {
                     userId: info.item.userId.toString()
                 });
-            }}>
+            }} key={info.index}>
                 <Image source={{uri: getProductImage(info.item.id)}} style={{
                     width: 150,
                     height: 100,

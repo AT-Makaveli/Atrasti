@@ -9,6 +9,9 @@ import { getWindowDimensions } from "../../../utils/WindowUtils";
 import { NavigationScreenProp } from "react-navigation";
 import { Product_Res } from "../../../Api/Models/Responds/Product_Res";
 import { User_Res } from "../../../Api/Models/Responds/User_Res";
+import { Company_Res } from "../../../Api/Models/Responds/Company_Res";
+import { CompanyPage_Res } from "../../../Api/Models/Responds/CompanyPage_Res";
+import { addFriend } from "../../../Api/ChatAPI";
 
 
 const windowDimensions = getWindowDimensions();
@@ -21,7 +24,8 @@ interface CompanyProps {
     navigation: NavigationScreenProp<any, any>,
     products: Product_Res[],
     user: User_Res | null,
-    isProfileOwner: boolean
+    isProfileOwner: boolean,
+    company: CompanyPage_Res | null
 }
 
 interface CompanyState {
@@ -97,7 +101,7 @@ export default class CompanyView extends React.Component<CompanyProps, CompanySt
                             </View>
                         </View>
                     </Modal>
-                ) : <Text></Text>}
+                ) : null}
 
                 <ScrollView style={{
                     flex: 1,
@@ -149,17 +153,28 @@ export default class CompanyView extends React.Component<CompanyProps, CompanySt
                             color: '#FFFFFF',
                             textAlign: "center",
                             fontSize: 16
-                        }}>A company whose customers is the importance.</Text>
-                        <AtrastiButton title={'Contact'} onClick={() => {
-
-                        }}
-                                       style={Styles.continueButton} textStyle={Styles.continueButtonText}/>
+                        }}>{this.props.company?.company.companyDesc}</Text>
+                        {!this.props.isProfileOwner &&
+                        <AtrastiButton title={'Contact'} onClick={this.onPressContact.bind(this)}
+                                       style={Styles.continueButton} textStyle={Styles.continueButtonText}/>}
                     </View>
 
                     <ProfileProductsView modalChange={this.setModalVisible.bind(this)} products={this.props.products}/>
                 </ScrollView>
             </View>
         );
+    }
+
+    onPressContact() {
+        addFriend(this.props.user?.userId as number)
+            .then(result => {
+                this.props.navigation.navigate('ProfileUserChat', {
+                    chatUser: result
+                });
+            })
+            .catch(error => {
+
+            });
     }
 
     onLikeInteract(productIndex: number) {

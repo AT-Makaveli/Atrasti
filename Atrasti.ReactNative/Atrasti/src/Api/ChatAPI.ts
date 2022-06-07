@@ -1,4 +1,4 @@
-import { CHAT_GET_FRIENDS, CHAT_GET_MESSAGES, CHAT_SEND_CHAT } from "./APIData";
+import { CHAT_GET_FRIENDS, CHAT_GET_MESSAGES, CHAT_SEND_CHAT, CHAT_SEND_FRIEND_REQUEST } from "./APIData";
 import { HttpServiceSingleton } from "../Services/HttpService";
 import { getErrors } from "../utils/ErrorHelpers";
 import { ChatFriends_Res } from "./Models/Responds/ChatFriends_Res";
@@ -6,6 +6,8 @@ import { SendChatMessage_Req } from "./Models/Requests/SendChatMessage_Req";
 import { ChatMessage_Res } from "./Models/Responds/ChatMessage_Res";
 import { ChatMessages_Req } from "./Models/Requests/ChatMessages_Req";
 import { ChatMessages_Res } from "./Models/Responds/ChatMessages_Res";
+import { ChatFriend_Res } from "./Models/Responds/ChatFriend_Res";
+import { AddFriend_Req } from "./Models/Requests/AddFriend_Req";
 
 export const USER_NOT_SET = "USER_NOT_SET";
 export const USER_PROFILE_NOT_SET = "USER_PROFILE_NOT_SET";
@@ -46,6 +48,20 @@ export function sendChatMessage(chatId: number, friendId: number, message: strin
             resolve(response.data);
         }).catch(error => {
             reject(getErrors(error.response.data))
+        })
+    });
+}
+
+export function addFriend(userId: number): Promise<ChatFriend_Res> {
+    const req: AddFriend_Req = {
+        userId: userId
+    };
+
+    return new Promise<ChatFriend_Res>((resolve, reject) => {
+        HttpServiceSingleton.post<ChatFriend_Res>(CHAT_SEND_FRIEND_REQUEST, req).then(response => {
+            resolve(response.data);
+        }).catch(error => {
+            reject(getErrors(error.response.data));
         })
     });
 }

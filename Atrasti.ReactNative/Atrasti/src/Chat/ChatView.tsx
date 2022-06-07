@@ -59,13 +59,11 @@ export default class ChatView extends React.Component<ChatViewProps, ChatViewSta
     componentDidMount() {
         this.receiveMessageSubscription = DeviceEventEmitter.addListener(ChatReceiveEvent.EVENT_TYPE, this.onReceiveChatMessage.bind(this));
         this._keyboardShowListener = Keyboard.addListener("keyboardDidShow", () => {
-            console.log('keyboard showed!');
             this._scrollView?.scrollToEnd({
                 animated: false
             })
         })
         this._keyboardHideListener = Keyboard.addListener("keyboardDidHide", () => {
-            console.log('keyboard Hidden!');
             this._scrollView?.scrollToEnd({
                 animated: false
             })

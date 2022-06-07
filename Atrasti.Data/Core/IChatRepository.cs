@@ -13,6 +13,10 @@ namespace Atrasti.Data.Core
         
         Task<IList<ChatFriend>> FetchFriendsAsync(int userId);
 
+        Task<IList<ChatFriend>> FetchFriendRequestsAsync(int userId);
+        
         Task<ChatFriend> FetchFriendAsync(int userId, int friendId);
+
+        Task<int> AddFriend(int userId, int friendId);
     }
 }

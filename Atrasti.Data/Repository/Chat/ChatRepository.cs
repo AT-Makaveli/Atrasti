@@ -44,10 +44,23 @@ namespace Atrasti.Data.Repository.Chat
         public Task<IList<ChatFriend>> FetchFriendsAsync(int userId)
         {
             const string query = @"
-            SELECT a.user_two_id as FriendId, a.Id AS ChatId, b.Company as FriendCompany
+            SELECT a.user_two_id as FriendId, a.Id AS ChatId, b.Company as FriendCompany, b.CompanyLogo as FriendLogo
             FROM chat_friends as a 
             JOIN Users as b ON a.user_two_id = b.Id
             WHERE a.user_one_id = @0;";
+
+            return WithConnection(
+                connection => connection.SelectMultipleAsync<ChatFriend>(query, userId),
+                CancellationToken.None);
+        }
+        
+        public Task<IList<ChatFriend>> FetchFriendRequestsAsync(int userId)
+        {
+            const string query = @"
+            SELECT a.user_two_id as FriendId, a.Id AS ChatId, b.Company as FriendCompany, b.CompanyLogo as FriendLogo
+            FROM chat_friends as a 
+            JOIN Users as b ON a.user_two_id = b.Id
+            WHERE a.user_two_id = @0;";
 
             return WithConnection(
                 connection => connection.SelectMultipleAsync<ChatFriend>(query, userId),
@@ -57,14 +70,19 @@ namespace Atrasti.Data.Repository.Chat
         public Task<ChatFriend> FetchFriendAsync(int userId, int friendId)
         {
             const string query = @"
-            SELECT a.user_two_id as FriendId, a.Id AS ChatId, b.Company as FriendCompany
+            SELECT a.user_two_id as FriendId, a.Id AS ChatId, b.Company as FriendCompany, b.CompanyLogo as FriendLogo
             FROM chat_friends as a 
             JOIN Users as b ON a.user_two_id = b.Id
-            WHERE a.user_one_id = @0;";
+            WHERE a.user_one_id = @0 AND a.user_two_id = @1;";
 
             return WithConnection(
-                connection => connection.SelectSingleAsync<ChatFriend>(query, userId),
+                connection => connection.SelectSingleAsync<ChatFriend>(query, userId, friendId),
                 CancellationToken.None);
+        }
+
+        public Task<int> AddFriend(int userId, int friendId)
+        {
+            return WithConnection(connection => connection.Insert("INSERT INTO chat_friends(id, user_one_id, user_two_id) SELECT max(id) + 1, @0, @1 FROM chat_friends;INSERT INTO chat_friends(id, user_one_id, user_two_id) SELECT max(id), @1, @0 FROM chat_friends;", userId, friendId));
         }
     }
 }

@@ -29,6 +29,7 @@ export const COUNTRY_COUNTRIES = URL + "Country/Countries";
 export const CHAT_GET_FRIENDS = URL + "Chat/GetFriends";
 export const CHAT_SEND_CHAT = URL + "Chat/SendChat";
 export const CHAT_GET_MESSAGES = URL + "Chat/ChatMessages";
+export const CHAT_SEND_FRIEND_REQUEST = URL + "Chat/SendFriendRequest";
 
 export const USER_DATA_SET_FCM_TOKEN = URL + "UserData/SetFcmToken";
 

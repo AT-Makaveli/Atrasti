@@ -23,7 +23,8 @@ namespace Atrasti.API.Helpers
             {
                 ChatId = friend.ChatId,
                 FriendId = friend.FriendId,
-                FriendCompany = friend.FriendCompany
+                FriendCompany = friend.FriendCompany,
+                FriendLogo = friend.FriendLogo
             };
         }
 

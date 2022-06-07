@@ -12,7 +12,9 @@ namespace Atrasti.Data.Core
 
         Task<IList<BaseCategory>> FindUserCategories(int companyId);
 
-        Task<int> RemoveUserCategories(int companyId, IList<int> toRemove);
+        Task<BaseCategory> FindBaseCategoryById(int baseCategoryId);
+
+        Task<int> RemoveUserCategories(int companyId, IEnumerable<int> toRemove);
         
         Task<int> AddUserCategories(int companyId, IList<int> toAdd);
     }

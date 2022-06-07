@@ -84,6 +84,7 @@ namespace Atrasti.API.Controllers
             };
 
             await _productRepository.CreateProductAsync(product);
+            BaseCategory category = await _baseCategoriesRepository.FindBaseCategoryById(req.Category);
 
             byte[] b64Data = Convert.FromBase64String(req.Image);
             if (CheckIfImageFile(b64Data))
@@ -99,7 +100,15 @@ namespace Atrasti.API.Controllers
                 CompanyId = user.Id,
                 Title = req.Title,
                 Tags = req.Tags,
-                Description = req.Description
+                Description = req.Description,
+                Category = category.Title,
+                BusinessType = "",
+                MainProducts = "",
+                MainMarkets = "",
+                Certificates = "",
+                City = "",
+                State = "",
+                Country = "",
             });
 
             return Ok();

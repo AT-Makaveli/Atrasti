@@ -5,5 +5,6 @@ namespace Atrasti.API.Models.Chat
         public int ChatId { get; set; }
         public int FriendId { get; set; }
         public string FriendCompany { get; set; }
+        public string FriendLogo { get; set; }
     }
 }

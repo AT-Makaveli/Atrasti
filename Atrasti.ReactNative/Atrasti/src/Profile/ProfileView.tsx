@@ -92,7 +92,7 @@ export default class ProfileView extends React.Component<ProfileProps, ProfileSt
         let view;
         if(this.state.setup) {
             if(this.state.userType === UserType_Mod.COMPANY && this.state.company !== null) {
-                return (<CompanyView navigation={this.props.navigation} products={(this.state.company as CompanyPage_Res).products}
+                return (<CompanyView company={this.state.company} navigation={this.props.navigation} products={(this.state.company as CompanyPage_Res).products}
                                      user={this.state.user} isProfileOwner={this.state.isProfileOwner}/>)
             } else if(this.state.userType === UserType_Mod.AGENT) {
                 return (<AgentView agentPage={this.state.agent as AgentPage_Res} navigation={this.props.navigation}

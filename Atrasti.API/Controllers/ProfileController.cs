@@ -62,6 +62,7 @@ namespace Atrasti.API.Controllers
                 case UserType.Company:
                     if (user.ProfileSetup)
                     {
+                        Company company = await _companyRepository.FindCompanyByIdAsync(user.Id);
                         ICollection<Product> products = await _productRepository.FindProductsByCompanyIdAsync(user.Id);
                         ICollection<Product_Res> productResults = new List<Product_Res>();
                         foreach (Product product in products)
@@ -76,7 +77,9 @@ namespace Atrasti.API.Controllers
                             IsProfileOwner = isProfileOwner,
                             CompanyPage = new CompanyPage_Res()
                             {
-                                Products = productResults
+                                Products = productResults,
+                                Company = company.MapCompany(),
+                                CompanyInfo = company.CompanyInfo.MapCompanyInfo()
                             },
                             User = user.MapUserModel(),
                             UserType = UserType_Mod.Company

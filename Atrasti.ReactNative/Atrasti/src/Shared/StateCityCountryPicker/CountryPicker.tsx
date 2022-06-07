@@ -1,8 +1,8 @@
 import React from "react";
 import { Picker } from "@react-native-picker/picker";
 import { StyleSheet, View } from "react-native";
-import { InfoCountry_Res } from "../Api/Models/Responds/InfoCountry_Res";
-import { getCountries } from "../Api/CountryAPI";
+import { InfoCountry_Res } from "../../Api/Models/Responds/InfoCountry_Res";
+import { getLoadedCountries, loadCountries } from "../../Api/CountryAPI";
 
 export interface CountryPickerProps {
     country: string,
@@ -18,23 +18,23 @@ export default class CountryPicker extends React.Component<CountryPickerProps, C
         super(props);
 
         this.state = {
-            countries: []
+            countries: getLoadedCountries()
+        }
+    }
+
+    componentDidUpdate(prevProps: Readonly<CountryPickerProps>, prevState: Readonly<CountryPickerState>, snapshot?: any) {
+        if (this.props.country !== prevProps.country) {
+            this.props.onValueChange(this.props.country);
         }
     }
 
     componentDidMount() {
-        getCountries()
-            .then(result => {
-                this.setState({
-                    countries: result
-                })
-            })
-            .catch(error => {
-
-            });
+        if (this.props.country === '') {
+            this.props.onValueChange(this.state.countries[0].country);
+        }
     }
 
-    renderProductList() {
+    renderCountries() {
         return this.state.countries.map((country, index) => {
             return <Picker.Item key={index} label={country.country} value={country.country} />
         })
@@ -44,7 +44,7 @@ export default class CountryPicker extends React.Component<CountryPickerProps, C
         return (
             <View style={Styles.parent}>
                 <Picker style={Styles.selectPicker} selectedValue={this.props.country} onValueChange={this.props.onValueChange}>
-                    {this.renderProductList()}
+                    {this.renderCountries()}
                 </Picker>
             </View>
         );

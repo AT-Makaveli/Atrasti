@@ -31,7 +31,7 @@ namespace Atrasti.Data.Repository
                         address = company.Address,
                         state = company.State,
                         city = company.City,
-                        country = company.City,
+                        country = company.Country,
                         website = company.Website,
                         desc = company.CompanyDesc
                     }, transaction);
@@ -75,12 +75,13 @@ namespace Atrasti.Data.Repository
             {
                 using IDbTransaction transaction = await connection.BeginTransactionAsync(CancellationToken.None);
                 await connection.ExecuteAsync(
-                    "UPDATE `companies` SET `Address` = @address, `City` = @city, `Country` = @country, `Website` = @website, `CompanyDesc` = @companyDesc WHERE `RefId` = @refId LIMIT 1;",
+                    "UPDATE `companies` SET `Address` = @address, `City` = @city, `State` = @state, `Country` = @country, `Website` = @website, `CompanyDesc` = @companyDesc WHERE `RefId` = @refId LIMIT 1;",
                     new
                     {
                         refId = company.RefId,
                         address = company.Address,
                         city = company.City,
+                        state = company.State,
                         country = company.Country,
                         website = company.Website,
                         companyDesc = company.CompanyDesc

@@ -1,7 +1,6 @@
 import React from "react";
 import {
     ActivityIndicator,
-    DeviceEventEmitter,
     Image,
     ScrollView,
     StyleSheet,
@@ -13,15 +12,13 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationRoute, NavigationScreenProp } from "react-navigation";
 import { manageProfilePage, postManageCompanyPage } from "../../../Api/ProfileAPI";
 import AtrastiButton from "../../../Shared/AtrastiButton";
-import CityPicker from "../../../Shared/CityPicker";
-import CountryPicker from "../../../Shared/CountryPicker";
-import CountryPickerEvent from "../../../utils/Events/Picker/CountryPickerEvent";
-import StatePicker from "../../../Shared/StatePicker";
 import ImagePicker, { Image as CroppedImage } from "react-native-image-crop-picker";
 import { mapSaveCompanyRequest } from "../../ManageProfileView";
 import { BaseCategory_Res } from "../../../Api/Models/Responds/BaseCategory_Res";
 import * as IonIcon from "react-native-vector-icons/Ionicons";
 import CategoryPicker from "../../../Shared/CategoryPicker";
+import CountryStateCityPicker from "../../../Shared/StateCityCountryPicker/CountryStateCityPicker";
+import { loadCountries } from "../../../Api/CountryAPI";
 
 export interface ManageProfileViewProps {
     navigation: NavigationScreenProp<any, any>;
@@ -52,6 +49,10 @@ export interface ManageProfilePageState {
 }
 
 export default class ManageProfileView extends React.Component<ManageProfileViewProps, ManageProfilePageState> {
+
+    private _country: string = '';
+    private _county: string = '';
+    private _city: string = '';
 
     constructor(props: ManageProfileViewProps) {
         super(props);
@@ -90,18 +91,27 @@ export default class ManageProfileView extends React.Component<ManageProfileView
             )
         });
 
-        manageProfilePage()
-            .then(result => {
+        Promise.all([loadCountries(), manageProfilePage()])
+            .then(results => {
+                const [, profile] = results;
                 const newState: ManageProfilePageState = {
-                    ...result.company,
-                    ...result.companyInfo,
+                    ...profile.company,
+                    ...profile.companyInfo,
                     loading: false,
                     edited: false,
                     logo: this.state.image?.data as string,
                     image: null,
-                    allCategories: result.allCategories,
-                    selectedCategories: result.usedCategories
+                    allCategories: profile.allCategories,
+                    selectedCategories: profile.usedCategories
                 };
+
+                if (newState.selectedCategories.length === 0 && newState.allCategories.length > 0) {
+                    newState.selectedCategories.push(newState.allCategories[0]);
+                }
+
+                this._country = profile.company?.country ?? '';
+                this._county = profile.company?.county ?? '';
+                this._city = profile.company?.city ?? '';
 
                 this.setState(newState);
             })
@@ -157,31 +167,20 @@ export default class ManageProfileView extends React.Component<ManageProfileView
                             value={this.state.phoneNumber}
                         />
                         <Text style={Styles.label}>Country</Text>
-                        <CountryPicker country={this.state.country} onValueChange={(country) => {
-                            if(this.state.country !== country) {
-                                DeviceEventEmitter.emit(CountryPickerEvent.EVENT_TYPE, new CountryPickerEvent(country, null))
-                                this.setState({
-                                    country: country,
-                                    county: '',
-                                    city: ''
-                                })
-                            }
-                        }}/>
-                        <StatePicker country={this.state.country} state={this.state.county} onValueChange={(state) => {
-                            if(this.state.county !== state) {
-                                DeviceEventEmitter.emit(CountryPickerEvent.EVENT_TYPE, new CountryPickerEvent(this.state.country, state))
-                                this.setState({
-                                    county: state,
-                                    city: ''
-                                });
-                            }
-                        }}/>
-                        <CityPicker country={this.state.country} state={this.state.county} city={this.state.city}
-                                    onValueChange={(city) => {
-                                        this.setState({
-                                            city: city
-                                        })
-                                    }}/>
+                        <CountryStateCityPicker
+                            country={this.state.country}
+                            state={this.state.county}
+                            city={this.state.city}
+                            onValueChange={(country, state, city) => {
+                                this._country = country;
+                                this._county = state;
+                                this._city = city;
+
+                                console.log('on change');
+                                console.log(this._country);
+                                console.log(this._county);
+                                console.log(this._city);
+                            }}/>
                         <Text style={Styles.label}>Website</Text>
                         <TextInput
                             style={Styles.input}
@@ -246,14 +245,14 @@ export default class ManageProfileView extends React.Component<ManageProfileView
                             placeholderTextColor={'#FEFEFE'}
                             value={this.state.capacity}
                         />
-                        <AtrastiButton title={'Save changes'} onClick={(event) => {
-
-                            postManageCompanyPage(mapSaveCompanyRequest(this.state))
-                                .then(result => {
-                                    console.log(result);
+                        <AtrastiButton title={'Save changes'} onClick={() => {
+                            const req = mapSaveCompanyRequest(this.state, this._country, this._county, this._city);
+                            postManageCompanyPage(req)
+                                .then(() => {
+                                    this.props.navigation.goBack();
                                 })
                                 .catch(error => {
-
+                                    console.log(error);
                                 });
 
                         }} style={Styles.saveButton} textStyle={Styles.saveButtonText}/>
@@ -343,12 +342,6 @@ export default class ManageProfileView extends React.Component<ManageProfileView
         })
     }
 
-    onBusinessTypeChange(data: string) {
-        this.setState({
-            businessType: data
-        })
-    }
-
     onMainProductsChange(data: string) {
         this.setState({
             mainProducts: data
@@ -390,7 +383,7 @@ export default class ManageProfileView extends React.Component<ManageProfileView
                 image: image
             });
         }).catch(error => {
-
+            console.log(error);
         });
     }
 }

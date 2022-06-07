@@ -43,7 +43,7 @@ namespace Atrasti.Data.Models
             FirstName = reader.GetData<string>("FirstName");
             LastName = reader.GetData<string>("LastName");
             ProfileSetup = reader.GetData<bool>("ProfileSetup");
-            UserType = reader.GetData<UserType>("UserType");
+            UserType = reader.GetEnum<UserType>("UserType");
             if (reader["CompanyLogo"] != DBNull.Value)
                 CompanyLogo = reader.GetData<string>("CompanyLogo");
 

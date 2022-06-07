@@ -31,6 +31,7 @@ namespace Atrasti.Search
                             .Field(f => f.MainProducts)
                             .Field(f => f.MainMarkets)
                             .Field(f => f.Certificates)
+                            .Field(f => f.Category)
                         )
                         .Query(searchQuery))
                 ).Index(new[] {"companies", "products"})

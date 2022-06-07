@@ -11,6 +11,9 @@ namespace Atrasti.Data
         internal static T GetData<T>(this IDataReader dataReader, string column) =>
             (T) dataReader[column];
 
+        internal static T GetEnum<T>(this IDataReader dataReader, string column) where T : struct =>
+            Enum.Parse<T>(dataReader[column].ToString() ?? string.Empty);
+
         internal static T? GetDataNullable<T>(this IDataReader dataReader, string column) where T : struct
         {
             object columnValue = dataReader[column];

@@ -3,6 +3,7 @@ using System.Data.Common;
 using System.Text;
 using System.Threading.Tasks;
 using Atrasti.Search;
+using Newtonsoft.Json;
 
 namespace Atrasti.Integrations.ElasticSearch
 {
@@ -22,13 +23,14 @@ namespace Atrasti.Integrations.ElasticSearch
         {
             //await TestSearch();
             await SyncCompanies();
+            await SyncProducts();
         }
 
         private async Task TestSearch()
         {
             await _searchService.RemoveAllDocuments("companies");
-            await _searchService.RemoveAllDocuments("products");
-            IReadOnlyCollection<SearchDocument> documents = await _searchService.SearchProducts("companies", "Seb");
+            //await _searchService.RemoveAllDocuments("products");
+            //IReadOnlyCollection<SearchDocument> documents = await _searchService.Search("fasdf asdf");
             
         }
 
@@ -68,16 +70,27 @@ namespace Atrasti.Integrations.ElasticSearch
         {
             DbConnection connection = await _dbConnectionProvider.ProvideConnection();
             DbCommand command = connection.CreateCommand();
-            command.CommandText = "SELECT u.Id, u.Company FROM Users u WHERE u.Company IS NOT NULL";
+            command.CommandText = "SELECT p.Id, p.Title, p.Description, p.Tags, u.Id as UserId, bc.Title as Category from products p JOIN Users u ON p.CompanyId = u.Id JOIN BaseCategories bc on p.ProductCategory = bc.Id;";
             DbDataReader reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                bool result = await _searchService.IndexDocument("companies", new SearchDocument()
+                string[] tags = JsonConvert.DeserializeObject<string[]>(reader.GetData<string>("Tags"));
+                bool result = await _searchService.IndexDocument("products", new SearchDocument()
                 {
-                    DocumentId = reader.GetData<int>("Id").ToString(),
-                    CompanyId = reader.GetData<int>("Id"),
-                    Title = reader.GetData<string>("Company"),
+                    DocumentId = reader.GetData<uint>("Id").ToString(),
+                    CompanyId = reader.GetData<int>("UserId"),
+                    Title = reader.GetData<string>("Title"),
+                    Description = reader.GetData<string>("Description"),
+                    Tags = tags,
+                    Category = reader.GetData<string>("Category"),
+                    BusinessType = "",
+                    MainProducts = "",
+                    MainMarkets = "",
+                    Certificates = "",
+                    City = "",
+                    State = "",
+                    Country = "",
                 });
             }
         }

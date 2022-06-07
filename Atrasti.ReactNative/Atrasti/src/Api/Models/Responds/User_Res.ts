@@ -5,4 +5,5 @@ export interface User_Res {
     lastName: string;
     company: string;
     logo: string;
+    userId: number;
 }

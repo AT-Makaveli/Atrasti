@@ -31,7 +31,7 @@ export interface UploadProductPageState {
     tagError: TagError[],
     loading: boolean,
     categories: BaseCategory_Res[],
-    selectedCategory: number
+    selectedCategory: number,
 }
 
 interface TagError {
@@ -69,9 +69,11 @@ export default class UploadProductView extends React.Component<UploadProductView
 
         getUserCategories()
             .then(result => {
+                const selectedCategory = result.categories.length > 0 ? result.categories[0].id : -1;
                 this.setState({
                     categories: result.categories,
-                    loading: false
+                    loading: false,
+                    selectedCategory: selectedCategory
                 })
             })
             .catch(error => {
@@ -151,7 +153,7 @@ export default class UploadProductView extends React.Component<UploadProductView
                 backgroundColor: '#000000',
                 flex: 1,
                 paddingLeft: 15,
-                paddingRight: 15
+                paddingRight: 15,
             }}>
                 {this.state.image === null ? null : (
                     <Image source={{
@@ -205,6 +207,11 @@ export default class UploadProductView extends React.Component<UploadProductView
                 <AtrastiButton title={'Upload product'} onClick={() => {
                     this.onUploadProduct();
                 }} style={Styles.uploadProductButton} textStyle={Styles.buttonText}/>
+                <View style={{
+                    height: 15
+                }}>
+
+                </View>
             </ScrollView>
         );
     }
@@ -217,7 +224,9 @@ export default class UploadProductView extends React.Component<UploadProductView
     }
 
     addTag() {
+        this.state.tags.reverse();
         this.state.tags.push('');
+        this.state.tags.reverse();
         this.setState({
             tags: this.state.tags
         })
@@ -236,12 +245,18 @@ export default class UploadProductView extends React.Component<UploadProductView
 
         if(valid) {
             const state = this.state;
+            this.setState({
+                loading: true
+            });
             uploadProduct(state.image?.data as string, state.productTitle, state.productDescription, state.tags, this.state.selectedCategory)
                 .then(result => {
-
+                    this.props.navigation.goBack();
                 })
                 .catch(errors => {
-
+                    this.setState({
+                        loading: false
+                    });
+                    console.log(errors);
                 })
         }
     }

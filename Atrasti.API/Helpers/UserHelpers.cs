@@ -7,7 +7,7 @@ namespace Atrasti.API.Helpers
     {
         public static User_Res MapUserModel(this AtrastiUser user)
         {
-            return new User_Res(user.FirstName, user.LastName, user.Company, user.CompanyLogo);
+            return new User_Res(user.FirstName, user.LastName, user.Company, user.CompanyLogo, user.Id);
         }
     }
 }
